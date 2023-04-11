@@ -158,7 +158,7 @@ int main() {
     // configure global opengl state
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
-
+    //-------------------------------------------------------------------------------------------------------------------Ovde je zavrsena inicijalizacija
     // build and compile shaders
     // -------------------------
     Shader ourShader("resources/shaders/2.model_lighting.vs", "resources/shaders/2.model_lighting.fs");
