@@ -166,6 +166,9 @@ int main() {
     Shader ourShader("resources/shaders/2.model_lighting.vs", "resources/shaders/2.model_lighting.fs");
     Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
 
+    Shader obicanPadobranShader("resources/shaders/2.model_lighting.vs", "resources/shaders/obicanPadobran.fs");
+
+
     float skyboxVertices[] = {
             -1.0f,  1.0f, -1.0f,
             -1.0f, -1.0f, -1.0f,
@@ -242,6 +245,12 @@ int main() {
     // -----------
     Model ourModel("resources/objects/riba/riba.obj");
     ourModel.SetShaderTextureNamePrefix("material.");
+    Model riba1Model("resources/objects/riba1/riba1.obj");
+    riba1Model.SetShaderTextureNamePrefix("material.");
+    Model riba2Model("resources/objects/riba2/riba2.obj");
+    riba1Model.SetShaderTextureNamePrefix("material.");
+    Model padobranModel("resources/objects/padobran/padobran.obj");
+    padobranModel.SetShaderTextureNamePrefix("material.");
 
     PointLight& pointLight = programState->pointLight;
     pointLight.position = glm::vec3(4.0f, 4.0, 0.0);
@@ -289,12 +298,15 @@ int main() {
         ourShader.setFloat("pointLight.quadratic", pointLight.quadratic);
         ourShader.setVec3("viewPosition", programState->camera.Position);
         ourShader.setFloat("material.shininess", 32.0f);
+
+
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(programState->camera.Zoom),
                                                 (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = programState->camera.GetViewMatrix();
         ourShader.setMat4("projection", projection);
         ourShader.setMat4("view", view);
+
 
         // render the loaded model
         glm::mat4 model = glm::mat4(1.0f);
@@ -303,6 +315,51 @@ int main() {
         model = glm::scale(model, glm::vec3(programState->backpackScale));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
         ourModel.Draw(ourShader);
+
+        //render riba1
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(7.24f, -4.0f, -3.6f));
+        model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(4.0f));    // it's a bit too big for our scene, so scale it down
+        ourShader.setMat4("model", model);
+        riba1Model.Draw(ourShader);
+
+        //render riba2
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(14.24f, -1.4f, -7.6f));
+        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(2.0f));    // it's a bit too big for our scene, so scale it down
+        ourShader.setMat4("model", model);
+        riba2Model.Draw(ourShader);
+
+        //render padobran
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-8.43f, 8.49f, 24.6f));
+        model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(2.0f));    // it's a bit too big for our scene, so scale it down
+        ourShader.setMat4("model", model);
+        padobranModel.Draw(ourShader);
+
+        obicanPadobranShader.use();                                                             //za nas drugi shader
+        obicanPadobranShader.setVec3("pointLight.position", pointLight.position);
+        obicanPadobranShader.setVec3("pointLight.ambient", pointLight.ambient);
+        obicanPadobranShader.setVec3("pointLight.diffuse", pointLight.diffuse);
+        obicanPadobranShader.setVec3("pointLight.specular", pointLight.specular);
+        obicanPadobranShader.setFloat("pointLight.constant", pointLight.constant);
+        obicanPadobranShader.setFloat("pointLight.linear", pointLight.linear);
+        obicanPadobranShader.setFloat("pointLight.quadratic", pointLight.quadratic);
+        obicanPadobranShader.setVec3("viewPosition", programState->camera.Position);
+        obicanPadobranShader.setFloat("material.shininess", 32.0f);
+
+        obicanPadobranShader.setMat4("projection", projection);
+        obicanPadobranShader.setMat4("view", view);
+        //render padobran2
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(15.5f, 2.6f, 11.6f));
+        model = glm::rotate(model, glm::radians(-75.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(2.0f));    // it's a bit too big for our scene, so scale it down
+        obicanPadobranShader.setMat4("model", model);
+        padobranModel.Draw(obicanPadobranShader);
 
         // draw skybox as last
         glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
@@ -463,5 +520,11 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
         } else {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
+    }
+
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {                                            //za lociranje kordinata
+        cout << programState->camera.Position.x << " "
+             << programState->camera.Position.y << " "
+             << programState->camera.Position.z << '\n';
     }
 }
