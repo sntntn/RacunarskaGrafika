@@ -15,9 +15,9 @@
 #include <learnopengl/model.h>
 
 #include <iostream>
-//ovde smo  komentar
+
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-///jopjop
+
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
@@ -33,7 +33,6 @@ const unsigned int SCR_WIDTH = 1080;
 const unsigned int SCR_HEIGHT = 900;
 
 // camera
-
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -41,6 +40,9 @@ bool firstMouse = true;
 // timing
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+
+int br=0;
+int pom=0;
 
 struct PointLight {
     glm::vec3 position;
@@ -58,8 +60,8 @@ struct ProgramState {
     bool ImGuiEnabled = false;
     Camera camera;
     bool CameraMouseMovementUpdateEnabled = true;
-    glm::vec3 backpackPosition = glm::vec3(0.0f);
-    float backpackScale = 5.0f;
+    glm::vec3 ribaPosition = glm::vec3(0.0f);
+    float ribaScale = 5.0f;
     PointLight pointLight;
     ProgramState()
             : camera(glm::vec3(0.0f, 0.0f, 3.0f)) {}
@@ -165,7 +167,6 @@ int main() {
     // -------------------------
     Shader ourShader("resources/shaders/2.model_lighting.vs", "resources/shaders/2.model_lighting.fs");
     Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
-
     Shader obicanPadobranShader("resources/shaders/2.model_lighting.vs", "resources/shaders/obicanPadobran.fs");
 
 
@@ -213,7 +214,6 @@ int main() {
             1.0f, -1.0f,  1.0f
     };
 
-    stbi_set_flip_vertically_on_load(false);
     // skybox VAO
     unsigned int skyboxVAO, skyboxVBO;
     glGenVertexArrays(1, &skyboxVAO);
@@ -235,11 +235,12 @@ int main() {
                     FileSystem::getPath("resources/textures/skybox/back.jpg")
             };
 
+    stbi_set_flip_vertically_on_load(false);
     unsigned int cubemapTexture = loadCubemap(faces);
+    stbi_set_flip_vertically_on_load(true);                         //vracamo na true -> zelim da mi to bude default
     skyboxShader.use();
     skyboxShader.setInt("skybox", 0);
 
-    stbi_set_flip_vertically_on_load(true);
 
     // load models
     // -----------
@@ -297,7 +298,11 @@ int main() {
         ourShader.setFloat("pointLight.linear", pointLight.linear);
         ourShader.setFloat("pointLight.quadratic", pointLight.quadratic);
         ourShader.setVec3("viewPosition", programState->camera.Position);
-        ourShader.setFloat("material.shininess", 32.0f);
+        br++;
+        if(br%500==0 || pom==1){        //ovo je za sada nakon 500 iteracija, a zapravo nam treba na odredjeno osvetljenje
+            pom=1;br=0;
+            ourShader.setFloat("material.shininess", 32.0f);
+        }
 
 
         // view/projection transformations
@@ -311,8 +316,8 @@ int main() {
         // render the loaded model
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model,
-                               programState->backpackPosition); // translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(programState->backpackScale));    // it's a bit too big for our scene, so scale it down
+                               programState->ribaPosition); // translate it down so it's at the center of the scene
+        model = glm::scale(model, glm::vec3(programState->ribaScale));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
         ourModel.Draw(ourShader);
 
@@ -341,15 +346,15 @@ int main() {
         padobranModel.Draw(ourShader);
 
         obicanPadobranShader.use();                                                             //za nas drugi shader
-        obicanPadobranShader.setVec3("pointLight.position", pointLight.position);
-        obicanPadobranShader.setVec3("pointLight.ambient", pointLight.ambient);
-        obicanPadobranShader.setVec3("pointLight.diffuse", pointLight.diffuse);
-        obicanPadobranShader.setVec3("pointLight.specular", pointLight.specular);
-        obicanPadobranShader.setFloat("pointLight.constant", pointLight.constant);
-        obicanPadobranShader.setFloat("pointLight.linear", pointLight.linear);
-        obicanPadobranShader.setFloat("pointLight.quadratic", pointLight.quadratic);
-        obicanPadobranShader.setVec3("viewPosition", programState->camera.Position);
-        obicanPadobranShader.setFloat("material.shininess", 32.0f);
+//        obicanPadobranShader.setVec3("pointLight.position", pointLight.position);
+//        obicanPadobranShader.setVec3("pointLight.ambient", pointLight.ambient);
+//        obicanPadobranShader.setVec3("pointLight.diffuse", pointLight.diffuse);
+//        obicanPadobranShader.setVec3("pointLight.specular", pointLight.specular);
+//        obicanPadobranShader.setFloat("pointLight.constant", pointLight.constant);
+//        obicanPadobranShader.setFloat("pointLight.linear", pointLight.linear);
+//        obicanPadobranShader.setFloat("pointLight.quadratic", pointLight.quadratic);
+//        obicanPadobranShader.setVec3("viewPosition", programState->camera.Position);
+//        obicanPadobranShader.setFloat("material.shininess", 32.0f);
 
         obicanPadobranShader.setMat4("projection", projection);
         obicanPadobranShader.setMat4("view", view);
@@ -488,8 +493,8 @@ void DrawImGui(ProgramState *programState) {
         ImGui::Text("Hello text");
         ImGui::SliderFloat("Float slider", &f, 0.0, 1.0);
         ImGui::ColorEdit3("Background color", (float *) &programState->clearColor);
-        ImGui::DragFloat3("Backpack position", (float*)&programState->backpackPosition);
-        ImGui::DragFloat("Backpack scale", &programState->backpackScale, 0.05, 0.1, 4.0);
+        ImGui::DragFloat3("Backpack position", (float*)&programState->ribaPosition);
+        ImGui::DragFloat("Backpack scale", &programState->ribaScale, 0.05, 0.1, 4.0);
 
         ImGui::DragFloat("pointLight.constant", &programState->pointLight.constant, 0.05, 0.0, 1.0);
         ImGui::DragFloat("pointLight.linear", &programState->pointLight.linear, 0.05, 0.0, 1.0);
