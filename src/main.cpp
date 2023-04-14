@@ -131,7 +131,7 @@ ProgramState *programState;
 
 void DrawImGui(ProgramState *programState);
 
-int main() {
+int main() {    //--------------------------------------------------------------------------------------------------------------------------------------------MAIN
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
@@ -191,9 +191,10 @@ int main() {
     //-------------------------------------------------------------------------------------------------------------------Ovde je zavrsena inicijalizacija
     // build and compile shaders
     // -------------------------
-    Shader ourShader("resources/shaders/2.model_lighting.vs", "resources/shaders/2.model_lighting.fs");
+    Shader ourShader("resources/shaders/riba.vs", "resources/shaders/riba.fs");
     Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
-    Shader obicanPadobranShader("resources/shaders/2.model_lighting.vs", "resources/shaders/obicanPadobran.fs");
+    Shader obicanPadobranShader("resources/shaders/riba.vs", "resources/shaders/obicanPadobran.fs");
+    Shader sjajShader("resources/shaders/sjaj.vs", "resources/shaders/sjaj.fs");
 
 
     float skyboxVertices[] = {
@@ -298,7 +299,7 @@ int main() {
 
     // render loop
     // -----------
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(window)) {///--------------------------------------------------------------------------------------------------------Pocetak render petlje
         // per-frame time logic
         // --------------------
         float currentFrame = glfwGetTime();
@@ -310,7 +311,7 @@ int main() {
         processInput(window);
 
 
-        // render
+        // render---------------------------------------------------------------------------------------------------------------------------------------- pocetak crtanja modela
         // ------
         glClearColor(programState->clearColor.r, programState->clearColor.g, programState->clearColor.b, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -340,7 +341,7 @@ int main() {
         ourShader.setMat4("view", view);
 
 
-        // render the loaded model                                          -> GLAVNA ZLATNA RIBICA
+        // render the main model                                          -> GLAVNA ZLATNA RIBICA
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model,programState->ribaPosition);
         model = glm::scale(model, glm::vec3(programState->ribaScale));
@@ -380,7 +381,7 @@ int main() {
         }
 
 
-        obicanPadobranShader.use();                                                             //za nas drugi shader
+        obicanPadobranShader.use();      //-----------------------------------------------------------------------------------obicanPadobranshader
 //        obicanPadobranShader.setVec3("pointLight.position", pointLight.position);
 //        obicanPadobranShader.setVec3("pointLight.ambient", pointLight.ambient);
 //        obicanPadobranShader.setVec3("pointLight.diffuse", pointLight.diffuse);
@@ -430,14 +431,7 @@ int main() {
         obicanPadobranShader.setMat4("model", model);
         padobranModel.Draw(obicanPadobranShader);
         //----------------------------------------------------------------------------
-        if(pojedi_p1){                          //zvezda sa punom bojom -> drugim shaderom kada je zavrseno skaliranje padobrana
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 2) * 17, -3.0f, cos(glfwGetTime() / 2) * 17));
-            model = glm::rotate(model, (float)glfwGetTime()*4, glm::vec3(0.0f, 1.0f, 0.0f));
-            model = glm::scale(model, glm::vec3(2.0f));
-            obicanPadobranShader.setMat4("model", model);
-            zvezdaModel.Draw(ourShader);
-        }//----------------------------------------------------------------------------
+
 
 
         //render padobran2 ka ribi
@@ -468,14 +462,7 @@ int main() {
         obicanPadobranShader.setMat4("model", model);
         padobranModel.Draw(obicanPadobranShader);
         //------------------------------------------------------------------------------
-        if(pojedi_p2){                  //zvezda sa punom bojom -> drugim shaderom kada je zavrseno skaliranje padobrana
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 4) * 14.5, -9.0f, cos(glfwGetTime() / 2) * 14.5));
-            model = glm::rotate(model, (float)glfwGetTime()*4, glm::vec3(0.0f, 1.0f, 0.0f));
-            model = glm::scale(model, glm::vec3(1.0f));
-            obicanPadobranShader.setMat4("model", model);
-            zvezdaModel.Draw(ourShader);
-        }//-----------------------------------------------------------------------------
+
 
         //render padobran3 ka ribi
         model = glm::mat4(1.0f);
@@ -503,15 +490,49 @@ int main() {
         }
         obicanPadobranShader.setMat4("model", model);
         padobranModel.Draw(obicanPadobranShader);
+
+
+
+
+        sjajShader.use();   //-----------------------------------------------------------------------------------------------sjajShader
+//        sjajShader.setVec3("pointLight.position", pointLight.position);
+//        sjajShader.setVec3("pointLight.ambient", pointLight.ambient);
+//        sjajShader.setVec3("pointLight.diffuse", pointLight.diffuse);
+//        sjajShader.setVec3("pointLight.specular", pointLight.specular);
+//        sjajShader.setFloat("pointLight.constant", pointLight.constant);
+//        sjajShader.setFloat("pointLight.linear", pointLight.linear);
+//        sjajShader.setFloat("pointLight.quadratic", pointLight.quadratic);
+//        sjajShader.setVec3("viewPosition", programState->camera.Position);
+//        sjajShader.setFloat("material.shininess", 32.0f);
+
+        sjajShader.setMat4("projection", projection);
+        sjajShader.setMat4("view", view);
         //------------------------------------------------------------------------------
-        if(pojedi_p3){                      //zvezda sa punom bojom -> drugim shaderom kada je zavrseno skaliranje padobrana
+        if(pojedi_p1){                          //zvezda1 sa punom bojom -> sjaj shaderom kada je zavrseno skaliranje padobrana
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 2) * 17, -3.0f, cos(glfwGetTime() / 2) * 17));
+            model = glm::rotate(model, (float)glfwGetTime()*4, glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::scale(model, glm::vec3(2.0f));
+            sjajShader.setMat4("model", model);
+            zvezdaModel.Draw(sjajShader);
+        }//----------------------------------------------------------------------------
+        if(pojedi_p2){                  //zvezda2 sa punom bojom -> sjaj shaderom kada je zavrseno skaliranje padobrana
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 4) * 14.5, -9.0f, cos(glfwGetTime() / 2) * 14.5));
+            model = glm::rotate(model, (float)glfwGetTime()*4, glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::scale(model, glm::vec3(1.0f));
+            sjajShader.setMat4("model", model);
+            zvezdaModel.Draw(sjajShader);
+        }//-----------------------------------------------------------------------------
+        if(pojedi_p3){                      //zvezda3 sa punom bojom -> sjaj shaderom kada je zavrseno skaliranje padobrana
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(-sin(glfwGetTime() / 4) * 4, -9.0f, -cos(glfwGetTime() / 2) * 4));
             model = glm::rotate(model, (float)glfwGetTime()*4, glm::vec3(0.0f, 1.0f, 0.0f));
             model = glm::scale(model, glm::vec3(1.0f));
-            obicanPadobranShader.setMat4("model", model);
-            zvezdaModel.Draw(ourShader);
-        }//------------------------------------------------------------------------------
+            sjajShader.setMat4("model", model);
+            zvezdaModel.Draw(sjajShader);
+        }
+        //--------------------------------------------------------------------------------------------------------------------------------------------iscrtani modeli
 
 
 
@@ -538,7 +559,7 @@ int main() {
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
-    }
+    }///-----------------------------------------------------------------------------------------------------------------------------------------------------Kraj render petlje
 
     programState->SaveToFile("resources/program_state.txt");
     delete programState;
