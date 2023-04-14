@@ -53,6 +53,9 @@ bool active_p3=false;
 bool pojedi_p1=false;
 bool pojedi_p2=false;
 bool pojedi_p3=false;
+bool efekat1=false;
+bool efekat2=false;
+bool efekat3=false;
 
 //glm::vec3 krajnjaTacka = glm::vec3(9.80, -0.11, -6.04);
 glm::vec3 krajnjaTacka = glm::vec3(0,0,0);
@@ -340,8 +343,8 @@ int main() {
 
         // render the loaded model                                          -> GLAVNA ZLATNA RIBICA
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model,programState->ribaPosition); // translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(programState->ribaScale));    // it's a bit too big for our scene, so scale it down
+        model = glm::translate(model,programState->ribaPosition);
+        model = glm::scale(model, glm::vec3(programState->ribaScale));
         ourShader.setMat4("model", model);
         ourModel.Draw(ourShader);
 
@@ -351,27 +354,31 @@ int main() {
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 2) * 17, -3.0f, cos(glfwGetTime() / 2) * 17));
             model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
-            model = glm::scale(model, glm::vec3(2.0f));    // it's a bit too big for our scene, so scale it down
+            model = glm::scale(model, glm::vec3(2.0f));
             ourShader.setMat4("model", model);
             zvezdaModel.Draw(ourShader);
         }
 
 
         //render zvezda2 rotirajuca
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 4) * 14.5, -9.0f, cos(glfwGetTime() / 2) * 14.5));
-        model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(1.0f));    // it's a bit too big for our scene, so scale it down
-        ourShader.setMat4("model", model);
-        zvezdaModel.Draw(ourShader);
+        if(!pojedi_p2){
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 4) * 14.5, -9.0f, cos(glfwGetTime() / 2) * 14.5));
+            model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::scale(model, glm::vec3(1.0f));
+            ourShader.setMat4("model", model);
+            zvezdaModel.Draw(ourShader);
+        }
 
         //render zvezda3 rotirajuca
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-sin(glfwGetTime() / 4) * 4, -9.0f, -cos(glfwGetTime() / 2) * 4));
-        model = glm::rotate(model, (float)glfwGetTime()*3, glm::vec3(0.0f, 1.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(1.0f));    // it's a bit too big for our scene, so scale it down
-        ourShader.setMat4("model", model);
-        zvezdaModel.Draw(ourShader);
+        if(!pojedi_p3){
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(-sin(glfwGetTime() / 4) * 4, -9.0f, -cos(glfwGetTime() / 2) * 4));
+            model = glm::rotate(model, (float)glfwGetTime()*3, glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::scale(model, glm::vec3(1.0f));
+            ourShader.setMat4("model", model);
+            zvezdaModel.Draw(ourShader);
+        }
 
 
         obicanPadobranShader.use();                                                             //za nas drugi shader
@@ -393,7 +400,7 @@ int main() {
         model = glm::mat4(1.0f);
         model = glm::translate(model, krajnjaTacka);
         model = glm::rotate(model, glm::radians(-75.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(0.2f));    // it's a bit too big for our scene, so scale it down
+        model = glm::scale(model, glm::vec3(0.2f));
         obicanPadobranShader.setMat4("model", model);
         padobranModel.Draw(obicanPadobranShader);
 
@@ -422,14 +429,14 @@ int main() {
         obicanPadobranShader.setMat4("model", model);
         padobranModel.Draw(obicanPadobranShader);
         //----------------------------------------------------------------------------
-        if(pojedi_p1){      //zvezda sa punom bojom -> drugim sejderom
+        if(pojedi_p1){                          //zvezda sa punom bojom -> drugim shaderom kada je zavrseno skaliranje padobrana
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 2) * 17, -3.0f, cos(glfwGetTime() / 2) * 17));
             model = glm::rotate(model, (float)glfwGetTime()*4, glm::vec3(0.0f, 1.0f, 0.0f));
-            model = glm::scale(model, glm::vec3(2.0f));    // it's a bit too big for our scene, so scale it down
+            model = glm::scale(model, glm::vec3(2.0f));
             obicanPadobranShader.setMat4("model", model);
             zvezdaModel.Draw(ourShader);
-        }
+        }//----------------------------------------------------------------------------
 
 
         //render padobran2 ka ribi
@@ -457,6 +464,15 @@ int main() {
         }
         obicanPadobranShader.setMat4("model", model);
         padobranModel.Draw(obicanPadobranShader);
+        //------------------------------------------------------------------------------
+        if(pojedi_p2){                  //zvezda sa punom bojom -> drugim shaderom kada je zavrseno skaliranje padobrana
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 4) * 14.5, -9.0f, cos(glfwGetTime() / 2) * 14.5));
+            model = glm::rotate(model, (float)glfwGetTime()*4, glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::scale(model, glm::vec3(1.0f));
+            obicanPadobranShader.setMat4("model", model);
+            zvezdaModel.Draw(ourShader);
+        }//-----------------------------------------------------------------------------
 
         //render padobran3 ka ribi
         model = glm::mat4(1.0f);
@@ -482,7 +498,15 @@ int main() {
         }
         obicanPadobranShader.setMat4("model", model);
         padobranModel.Draw(obicanPadobranShader);
-
+        //------------------------------------------------------------------------------
+        if(pojedi_p3){                      //zvezda sa punom bojom -> drugim shaderom kada je zavrseno skaliranje padobrana
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(-sin(glfwGetTime() / 4) * 4, -9.0f, -cos(glfwGetTime() / 2) * 4));
+            model = glm::rotate(model, (float)glfwGetTime()*4, glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::scale(model, glm::vec3(1.0f));
+            obicanPadobranShader.setMat4("model", model);
+            zvezdaModel.Draw(ourShader);
+        }//------------------------------------------------------------------------------
 
 
 
