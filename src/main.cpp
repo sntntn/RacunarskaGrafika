@@ -15,6 +15,7 @@
 #include <learnopengl/model.h>
 
 #include <iostream>
+#include <cmath>
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
@@ -27,6 +28,8 @@ void processInput(GLFWwindow *window);
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 
 unsigned int loadCubemap(vector<std::string> faces);
+
+void priblizi(float& s, float k); //priblizava s ka k za +-0.01
 
 // settings
 const unsigned int SCR_WIDTH = 1080;
@@ -43,6 +46,12 @@ float lastFrame = 0.0f;
 
 int br=0;
 int pom=0;
+//glm::vec3 krajnjaTacka = glm::vec3(9.80, -0.11, -6.04);
+glm::vec3 krajnjaTacka = glm::vec3(0,0,0);
+glm::vec3 padobran1 =glm::vec3(9.80, -0.11, 6.04);
+
+
+//------------------------------------------------------
 
 struct PointLight {
     glm::vec3 position;
@@ -252,6 +261,8 @@ int main() {
     riba1Model.SetShaderTextureNamePrefix("material.");
     Model padobranModel("resources/objects/padobran/padobran.obj");
     padobranModel.SetShaderTextureNamePrefix("material.");
+    Model zvezdaModel("resources/objects/zvezda/zvezda.obj");
+    zvezdaModel.SetShaderTextureNamePrefix("material.");
 
     PointLight& pointLight = programState->pointLight;
     pointLight.position = glm::vec3(4.0f, 4.0, 0.0);
@@ -315,36 +326,44 @@ int main() {
 
         // render the loaded model
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model,
-                               programState->ribaPosition); // translate it down so it's at the center of the scene
+        model = glm::translate(model,programState->ribaPosition); // translate it down so it's at the center of the scene
         model = glm::scale(model, glm::vec3(programState->ribaScale));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
         ourModel.Draw(ourShader);
 
         //render riba1
-        model = glm::mat4(1.0f);
+/*        model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(7.24f, -4.0f, -3.6f));
         model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         model = glm::scale(model, glm::vec3(4.0f));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
         riba1Model.Draw(ourShader);
+*/
 
-        //render riba2
+        //render zvezda1 rotirajuca
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(14.24f, -1.4f, -7.6f));
-        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 2) * 15, -3.0f, cos(glfwGetTime() / 2) * 15));
+        model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
         model = glm::scale(model, glm::vec3(2.0f));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
-        riba2Model.Draw(ourShader);
+        zvezdaModel.Draw(ourShader);
+
+        //render zvezda1 rotirajuca
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 2) * 15, 3.0f, cos(glfwGetTime() / 2) * 15));
+        model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(2.0f));    // it's a bit too big for our scene, so scale it down
+        ourShader.setMat4("model", model);
+        zvezdaModel.Draw(ourShader);
 
         //render padobran
-        model = glm::mat4(1.0f);
+/*        model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(-8.43f, 8.49f, 24.6f));
         model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         model = glm::scale(model, glm::vec3(2.0f));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
         padobranModel.Draw(ourShader);
-
+*/
         obicanPadobranShader.use();                                                             //za nas drugi shader
 //        obicanPadobranShader.setVec3("pointLight.position", pointLight.position);
 //        obicanPadobranShader.setVec3("pointLight.ambient", pointLight.ambient);
@@ -365,6 +384,41 @@ int main() {
         model = glm::scale(model, glm::vec3(2.0f));    // it's a bit too big for our scene, so scale it down
         obicanPadobranShader.setMat4("model", model);
         padobranModel.Draw(obicanPadobranShader);
+
+
+        //render padobran u ribi
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, krajnjaTacka);
+        model = glm::rotate(model, glm::radians(-75.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.2f));    // it's a bit too big for our scene, so scale it down
+        obicanPadobranShader.setMat4("model", model);
+        padobranModel.Draw(obicanPadobranShader);
+
+        //render padobran ka ribi
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, padobran1);
+        model = glm::rotate(model, glm::radians(-75.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.2f));    // it's a bit too big for our scene, so scale it down
+        obicanPadobranShader.setMat4("model", model);
+        padobranModel.Draw(obicanPadobranShader);
+
+        //render padobran2 ka ribi
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 4) * 15, 6.0f, cos(glfwGetTime() / 2) * 15));
+        model = glm::rotate(model, glm::radians(-75.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.2f));    // it's a bit too big for our scene, so scale it down
+        obicanPadobranShader.setMat4("model", model);
+        padobranModel.Draw(obicanPadobranShader);
+        //render zvezda2 rotirajuca
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 4) * 15, -6.0f, cos(glfwGetTime() / 2) * 15));
+        model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(1.0f));    // it's a bit too big for our scene, so scale it down
+        ourShader.setMat4("model", model);
+        zvezdaModel.Draw(ourShader);
+
+
+
 
         // draw skybox as last
         glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
@@ -532,4 +586,13 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
              << programState->camera.Position.y << " "
              << programState->camera.Position.z << '\n';
     }
+}
+
+void priblizi(float& s, float k){                       //funkcija ce da se koristi za priblizavanje vrednosti s ka vrednosti k
+    if(s >= k-0.01 || s <= k+0.01)
+        return;
+    if(s < k)
+        s += 0.01;
+    else
+        s -= 0.01;
 }
