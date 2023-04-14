@@ -29,7 +29,8 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 
 unsigned int loadCubemap(vector<std::string> faces);
 
-void priblizi(float& s, float k); //priblizava s ka k za +-0.01
+bool priblizi(float& s, float k); //priblizava s ka k za +-0.01
+void pribliziFast(float& s,float k); //priblizava s ka k za +-0.1
 
 // settings
 const unsigned int SCR_WIDTH = 1080;
@@ -49,6 +50,9 @@ int pom=0;
 bool active_p1=false;
 bool active_p2=false;
 bool active_p3=false;
+bool pojedi_p1=false;
+bool pojedi_p2=false;
+bool pojedi_p3=false;
 
 //glm::vec3 krajnjaTacka = glm::vec3(9.80, -0.11, -6.04);
 glm::vec3 krajnjaTacka = glm::vec3(0,0,0);
@@ -58,6 +62,7 @@ glm::vec3 padobran3 =glm::vec3(0, 0, 0);
 float p1_scale = 2.0;
 float p2_scale = 1.0;
 float p3_scale = 1.0;
+float p1x,p1y,p1z,p2x,p2y,p2z,p3x,p3y,p3z;      //kordinate svakog padobrana
 
 
 //------------------------------------------------------
@@ -342,12 +347,15 @@ int main() {
 
 
         //render zvezda1 rotirajuca
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 2) * 17, -3.0f, cos(glfwGetTime() / 2) * 17));
-        model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(2.0f));    // it's a bit too big for our scene, so scale it down
-        ourShader.setMat4("model", model);
-        zvezdaModel.Draw(ourShader);
+        if(!pojedi_p1){                                     //ako nije pojeden odgovarajuci padobranac nema jos punu boju
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 2) * 17, -3.0f, cos(glfwGetTime() / 2) * 17));
+            model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::scale(model, glm::vec3(2.0f));    // it's a bit too big for our scene, so scale it down
+            ourShader.setMat4("model", model);
+            zvezdaModel.Draw(ourShader);
+        }
+
 
         //render zvezda2 rotirajuca
         model = glm::mat4(1.0f);
@@ -391,41 +399,83 @@ int main() {
 
         //render padobran1 ka ribi
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 2) * 17, sin(glfwGetTime() / 4) * 5 +10.0f, cos(glfwGetTime() / 2) * 17));
+        if(!pojedi_p1){
+            p1x=sin(glfwGetTime() / 2) * 17;
+            p1y=sin(glfwGetTime() / 4) * 5 +10.0f;
+            p1z=cos(glfwGetTime() / 2) * 17;
+            model = glm::translate(model, glm::vec3(p1x, p1y, p1z));
+        }
+        else{
+            pribliziFast(p1x,0);
+            pribliziFast(p1y,0);
+            pribliziFast(p1z,0);
+            model = glm::translate(model, glm::vec3(p1x, p1y, p1z));
+        }
         model = glm::rotate(model, (float)glfwGetTime()/2-82+180, glm::vec3(0.0f, 1.0f, 0.0f));
         if(active_p1){
-            priblizi(p1_scale,0.2);
-            model = glm::scale(model, glm::vec3(p1_scale));    // it's a bit too big for our scene, so scale it down
+            pojedi_p1=priblizi(p1_scale,0.2);
+            model = glm::scale(model, glm::vec3(p1_scale));
         }
         else {
-            model = glm::scale(model, glm::vec3(p1_scale));    // it's a bit too big for our scene, so scale it down
+            model = glm::scale(model, glm::vec3(p1_scale));
         }
         obicanPadobranShader.setMat4("model", model);
         padobranModel.Draw(obicanPadobranShader);
+        //----------------------------------------------------------------------------
+        if(pojedi_p1){      //zvezda sa punom bojom -> drugim sejderom
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 2) * 17, -3.0f, cos(glfwGetTime() / 2) * 17));
+            model = glm::rotate(model, (float)glfwGetTime()*4, glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::scale(model, glm::vec3(2.0f));    // it's a bit too big for our scene, so scale it down
+            obicanPadobranShader.setMat4("model", model);
+            zvezdaModel.Draw(ourShader);
+        }
+
 
         //render padobran2 ka ribi
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 4) * 14.5, -sin(glfwGetTime() / 4) * 9 +9.0f, cos(glfwGetTime() / 2) * 14.5));
+
+        if(!pojedi_p2){
+            p2x=sin(glfwGetTime() / 4) * 14.5;
+            p2y=-sin(glfwGetTime() / 4) * 9 +9.0f;
+            p2z=cos(glfwGetTime() / 2) * 14.5;
+            model = glm::translate(model, glm::vec3(p2x, p2y, p2z));
+        }
+        else{
+            pribliziFast(p2x,0);
+            pribliziFast(p2y,0);
+            pribliziFast(p2z,0);
+            model = glm::translate(model, glm::vec3(p2x, p2y, p2z));
+        }
         model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
-//        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
         if(active_p2){
-            priblizi(p2_scale,0.2);
-            model = glm::scale(model, glm::vec3(p2_scale));    // it's a bit too big for our scene, so scale it down
+            pojedi_p2=priblizi(p2_scale,0.2);
+            model = glm::scale(model, glm::vec3(p2_scale));
         }
         else {
-            model = glm::scale(model, glm::vec3(p2_scale));    // it's a bit too big for our scene, so scale it down
+            model = glm::scale(model, glm::vec3(p2_scale));
         }
         obicanPadobranShader.setMat4("model", model);
         padobranModel.Draw(obicanPadobranShader);
 
         //render padobran3 ka ribi
         model = glm::mat4(1.0f);
-//        model = glm::translate(model, glm::vec3(-sin(glfwGetTime() / 4) * 4, 9.0f, -cos(glfwGetTime() / 2) * 4));
-        model = glm::translate(model, glm::vec3(-sin(glfwGetTime() / 4) * 4, -sin(glfwGetTime() / 4) * 6 +9.0f, -cos(glfwGetTime() / 2) * 4));
+        if(!pojedi_p3){
+            p3x=-sin(glfwGetTime() / 4) * 4;
+            p3y=-sin(glfwGetTime() / 4) * 6 +9.0f;
+            p3z=-cos(glfwGetTime() / 2) * 4;
+            model = glm::translate(model, glm::vec3(p3x, p3y, p3z));
+        }
+        else{
+            pribliziFast(p3x,0);
+            pribliziFast(p3y,0);
+            pribliziFast(p3z,0);
+            model = glm::translate(model, glm::vec3(p3x, p3y, p3z));
+        }
         model = glm::rotate(model, (float)glfwGetTime()*3, glm::vec3(0.0f, 1.0f, 0.0f));
         if(active_p3){
-            priblizi(p3_scale,0.2);
-            model = glm::scale(model, glm::vec3(p3_scale));    // it's a bit too big for our scene, so scale it down
+            pojedi_p3=priblizi(p3_scale,0.2);
+            model = glm::scale(model, glm::vec3(p3_scale));
         }
         else {
             model = glm::scale(model, glm::vec3(p3_scale));    // it's a bit too big for our scene, so scale it down
@@ -614,11 +664,21 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
     }
 }
 
-void priblizi(float& s, float k){                       //funkcija ce da se koristi za priblizavanje vrednosti s ka vrednosti k
+bool priblizi(float& s, float k){                       //funkcija ce da se koristi za priblizavanje vrednosti s ka vrednosti k
     if(s >= k-0.01 && s <= k+0.01)
-        return;
+        return true;                    //stigli smo do zeljenog opsega
     if(s < k)
         s += 0.01;
     else
         s -= 0.01;
+    return false;
+}
+
+void pribliziFast(float& s,float k){
+    if(s >= k-0.1 && s <= k+0.1)
+        return;
+    if(s < k)
+        s += 0.1;
+    else
+        s -= 0.1;
 }
