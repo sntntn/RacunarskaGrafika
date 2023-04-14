@@ -342,7 +342,7 @@ int main() {
 
         //render zvezda1 rotirajuca
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 2) * 15, -3.0f, cos(glfwGetTime() / 2) * 15));
+        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 2) * 17, -3.0f, cos(glfwGetTime() / 2) * 17));
         model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
         model = glm::scale(model, glm::vec3(2.0f));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
@@ -391,15 +391,15 @@ int main() {
         //render padobran ka ribi
         model = glm::mat4(1.0f);
 //        model = glm::translate(model, padobran1);
-        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 2) * 15, sin(glfwGetTime() / 4) * 5 +10.0f, cos(glfwGetTime() / 2) * 15));
-        model = glm::rotate(model, glm::radians(-75.0f), glm::vec3(0.0f, 0.9f, 0.0f));
+        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 2) * 17, sin(glfwGetTime() / 4) * 5 +10.0f, cos(glfwGetTime() / 2) * 17));
+        model = glm::rotate(model, (float)glfwGetTime()/2-82+180, glm::vec3(0.0f, 1.0f, 0.0f));
         model = glm::scale(model, glm::vec3(2.0f));    // it's a bit too big for our scene, so scale it down
         obicanPadobranShader.setMat4("model", model);
         padobranModel.Draw(obicanPadobranShader);
 
         //render padobran2 ka ribi
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 4) * 15, -sin(glfwGetTime() / 4) * 4 +9.0f, cos(glfwGetTime() / 2) * 15));
+        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 4) * 15, -sin(glfwGetTime() / 4) * 9 +9.0f, cos(glfwGetTime() / 2) * 15));
         model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
 //        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
         model = glm::scale(model, glm::vec3(1.0f));    // it's a bit too big for our scene, so scale it down
