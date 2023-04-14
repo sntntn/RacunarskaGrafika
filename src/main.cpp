@@ -46,15 +46,18 @@ float lastFrame = 0.0f;
 
 int br=0;
 int pom=0;
-bool active_crv1=false;
-bool active_crv2=false;
-bool active_crv3=false;
+bool active_p1=false;
+bool active_p2=false;
+bool active_p3=false;
 
 //glm::vec3 krajnjaTacka = glm::vec3(9.80, -0.11, -6.04);
 glm::vec3 krajnjaTacka = glm::vec3(0,0,0);
 glm::vec3 padobran1 =glm::vec3(0, 0, 0);
 glm::vec3 padobran2 =glm::vec3(0, 0, 0);
 glm::vec3 padobran3 =glm::vec3(0, 0, 0);
+float p1_scale = 2.0;
+float p2_scale = 1.0;
+float p3_scale = 1.0;
 
 
 //------------------------------------------------------
@@ -386,12 +389,17 @@ int main() {
         obicanPadobranShader.setMat4("model", model);
         padobranModel.Draw(obicanPadobranShader);
 
-        //render padobran ka ribi
+        //render padobran1 ka ribi
         model = glm::mat4(1.0f);
-//        model = glm::translate(model, padobran1);
         model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 2) * 17, sin(glfwGetTime() / 4) * 5 +10.0f, cos(glfwGetTime() / 2) * 17));
         model = glm::rotate(model, (float)glfwGetTime()/2-82+180, glm::vec3(0.0f, 1.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(2.0f));    // it's a bit too big for our scene, so scale it down
+        if(active_p1){
+            priblizi(p1_scale,0.2);
+            model = glm::scale(model, glm::vec3(p1_scale));    // it's a bit too big for our scene, so scale it down
+        }
+        else {
+            model = glm::scale(model, glm::vec3(p1_scale));    // it's a bit too big for our scene, so scale it down
+        }
         obicanPadobranShader.setMat4("model", model);
         padobranModel.Draw(obicanPadobranShader);
 
@@ -400,7 +408,13 @@ int main() {
         model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 4) * 14.5, -sin(glfwGetTime() / 4) * 9 +9.0f, cos(glfwGetTime() / 2) * 14.5));
         model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
 //        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(1.0f));    // it's a bit too big for our scene, so scale it down
+        if(active_p2){
+            priblizi(p2_scale,0.2);
+            model = glm::scale(model, glm::vec3(p2_scale));    // it's a bit too big for our scene, so scale it down
+        }
+        else {
+            model = glm::scale(model, glm::vec3(p2_scale));    // it's a bit too big for our scene, so scale it down
+        }
         obicanPadobranShader.setMat4("model", model);
         padobranModel.Draw(obicanPadobranShader);
 
@@ -409,7 +423,13 @@ int main() {
 //        model = glm::translate(model, glm::vec3(-sin(glfwGetTime() / 4) * 4, 9.0f, -cos(glfwGetTime() / 2) * 4));
         model = glm::translate(model, glm::vec3(-sin(glfwGetTime() / 4) * 4, -sin(glfwGetTime() / 4) * 6 +9.0f, -cos(glfwGetTime() / 2) * 4));
         model = glm::rotate(model, (float)glfwGetTime()*3, glm::vec3(0.0f, 1.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(1.0f));    // it's a bit too big for our scene, so scale it down
+        if(active_p3){
+            priblizi(p3_scale,0.2);
+            model = glm::scale(model, glm::vec3(p3_scale));    // it's a bit too big for our scene, so scale it down
+        }
+        else {
+            model = glm::scale(model, glm::vec3(p3_scale));    // it's a bit too big for our scene, so scale it down
+        }
         obicanPadobranShader.setMat4("model", model);
         padobranModel.Draw(obicanPadobranShader);
 
@@ -584,18 +604,18 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
     }
 
     if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
-        active_crv1=true;
+        active_p1=true;
     }
     if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
-        active_crv2=true;
+        active_p2=true;
     }
     if (key == GLFW_KEY_3 && action == GLFW_PRESS) {
-        active_crv3=true;
+        active_p3=true;
     }
 }
 
 void priblizi(float& s, float k){                       //funkcija ce da se koristi za priblizavanje vrednosti s ka vrednosti k
-    if(s >= k-0.01 || s <= k+0.01)
+    if(s >= k-0.01 && s <= k+0.01)
         return;
     if(s < k)
         s += 0.01;
