@@ -46,9 +46,15 @@ float lastFrame = 0.0f;
 
 int br=0;
 int pom=0;
+bool active_crv1=false;
+bool active_crv2=false;
+bool active_crv3=false;
+
 //glm::vec3 krajnjaTacka = glm::vec3(9.80, -0.11, -6.04);
 glm::vec3 krajnjaTacka = glm::vec3(0,0,0);
-glm::vec3 padobran1 =glm::vec3(9.80, -0.11, 6.04);
+glm::vec3 padobran1 =glm::vec3(0, 0, 0);
+glm::vec3 padobran2 =glm::vec3(0, 0, 0);
+glm::vec3 padobran3 =glm::vec3(0, 0, 0);
 
 
 //------------------------------------------------------
@@ -331,14 +337,6 @@ int main() {
         ourShader.setMat4("model", model);
         ourModel.Draw(ourShader);
 
-        //render riba1
-/*        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(7.24f, -4.0f, -3.6f));
-        model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(4.0f));    // it's a bit too big for our scene, so scale it down
-        ourShader.setMat4("model", model);
-        riba1Model.Draw(ourShader);
-*/
 
         //render zvezda1 rotirajuca
         model = glm::mat4(1.0f);
@@ -350,7 +348,7 @@ int main() {
 
         //render zvezda2 rotirajuca
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 4) * 15, -9.0f, cos(glfwGetTime() / 2) * 15));
+        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 4) * 14.5, -9.0f, cos(glfwGetTime() / 2) * 14.5));
         model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
         model = glm::scale(model, glm::vec3(1.0f));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
@@ -399,7 +397,7 @@ int main() {
 
         //render padobran2 ka ribi
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 4) * 15, -sin(glfwGetTime() / 4) * 9 +9.0f, cos(glfwGetTime() / 2) * 15));
+        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 4) * 14.5, -sin(glfwGetTime() / 4) * 9 +9.0f, cos(glfwGetTime() / 2) * 14.5));
         model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
 //        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
         model = glm::scale(model, glm::vec3(1.0f));    // it's a bit too big for our scene, so scale it down
@@ -583,6 +581,16 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
         cout << programState->camera.Position.x << " "
              << programState->camera.Position.y << " "
              << programState->camera.Position.z << '\n';
+    }
+
+    if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
+        active_crv1=true;
+    }
+    if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
+        active_crv2=true;
+    }
+    if (key == GLFW_KEY_3 && action == GLFW_PRESS) {
+        active_crv3=true;
     }
 }
 
