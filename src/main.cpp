@@ -324,7 +324,7 @@ int main() {
         ourShader.setMat4("view", view);
 
 
-        // render the loaded model
+        // render the loaded model                                          -> GLAVNA ZLATNA RIBICA
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model,programState->ribaPosition); // translate it down so it's at the center of the scene
         model = glm::scale(model, glm::vec3(programState->ribaScale));    // it's a bit too big for our scene, so scale it down
@@ -348,22 +348,23 @@ int main() {
         ourShader.setMat4("model", model);
         zvezdaModel.Draw(ourShader);
 
-        //render zvezda1 rotirajuca
+        //render zvezda2 rotirajuca
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 2) * 15, 3.0f, cos(glfwGetTime() / 2) * 15));
+        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 4) * 15, -9.0f, cos(glfwGetTime() / 2) * 15));
         model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(2.0f));    // it's a bit too big for our scene, so scale it down
+        model = glm::scale(model, glm::vec3(1.0f));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
         zvezdaModel.Draw(ourShader);
 
-        //render padobran
-/*        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-8.43f, 8.49f, 24.6f));
-        model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(2.0f));    // it's a bit too big for our scene, so scale it down
+        //render zvezda3 rotirajuca
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-sin(glfwGetTime() / 4) * 4, -9.0f, -cos(glfwGetTime() / 2) * 4));
+        model = glm::rotate(model, (float)glfwGetTime()*3, glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(1.0f));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
-        padobranModel.Draw(ourShader);
-*/
+        zvezdaModel.Draw(ourShader);
+
+
         obicanPadobranShader.use();                                                             //za nas drugi shader
 //        obicanPadobranShader.setVec3("pointLight.position", pointLight.position);
 //        obicanPadobranShader.setVec3("pointLight.ambient", pointLight.ambient);
@@ -377,13 +378,6 @@ int main() {
 
         obicanPadobranShader.setMat4("projection", projection);
         obicanPadobranShader.setMat4("view", view);
-        //render padobran2
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(15.5f, 2.6f, 11.6f));
-        model = glm::rotate(model, glm::radians(-75.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(2.0f));    // it's a bit too big for our scene, so scale it down
-        obicanPadobranShader.setMat4("model", model);
-        padobranModel.Draw(obicanPadobranShader);
 
 
         //render padobran u ribi
@@ -396,26 +390,30 @@ int main() {
 
         //render padobran ka ribi
         model = glm::mat4(1.0f);
-        model = glm::translate(model, padobran1);
-        model = glm::rotate(model, glm::radians(-75.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(0.2f));    // it's a bit too big for our scene, so scale it down
+//        model = glm::translate(model, padobran1);
+        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 2) * 15, sin(glfwGetTime() / 4) * 5 +10.0f, cos(glfwGetTime() / 2) * 15));
+        model = glm::rotate(model, glm::radians(-75.0f), glm::vec3(0.0f, 0.9f, 0.0f));
+        model = glm::scale(model, glm::vec3(2.0f));    // it's a bit too big for our scene, so scale it down
         obicanPadobranShader.setMat4("model", model);
         padobranModel.Draw(obicanPadobranShader);
 
         //render padobran2 ka ribi
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 4) * 15, 6.0f, cos(glfwGetTime() / 2) * 15));
-        model = glm::rotate(model, glm::radians(-75.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(0.2f));    // it's a bit too big for our scene, so scale it down
+        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 4) * 15, -sin(glfwGetTime() / 4) * 4 +9.0f, cos(glfwGetTime() / 2) * 15));
+        model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
+//        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(1.0f));    // it's a bit too big for our scene, so scale it down
         obicanPadobranShader.setMat4("model", model);
         padobranModel.Draw(obicanPadobranShader);
-        //render zvezda2 rotirajuca
+
+        //render padobran3 ka ribi
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 4) * 15, -6.0f, cos(glfwGetTime() / 2) * 15));
-        model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
+//        model = glm::translate(model, glm::vec3(-sin(glfwGetTime() / 4) * 4, 9.0f, -cos(glfwGetTime() / 2) * 4));
+        model = glm::translate(model, glm::vec3(-sin(glfwGetTime() / 4) * 4, -sin(glfwGetTime() / 4) * 6 +9.0f, -cos(glfwGetTime() / 2) * 4));
+        model = glm::rotate(model, (float)glfwGetTime()*3, glm::vec3(0.0f, 1.0f, 0.0f));
         model = glm::scale(model, glm::vec3(1.0f));    // it's a bit too big for our scene, so scale it down
-        ourShader.setMat4("model", model);
-        zvezdaModel.Draw(ourShader);
+        obicanPadobranShader.setMat4("model", model);
+        padobranModel.Draw(obicanPadobranShader);
 
 
 
