@@ -30,7 +30,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 unsigned int loadCubemap(vector<std::string> faces);
 
 bool priblizi(float& s, float k); //priblizava s ka k za +-0.01
-void pribliziFast(float& s,float k); //priblizava s ka k za +-0.1
+bool pribliziFast(float& s,float k); //priblizava s ka k za +-0.1
 
 // settings
 const unsigned int SCR_WIDTH = 1080;
@@ -327,8 +327,7 @@ int main() {
         ourShader.setFloat("pointLight.quadratic", pointLight.quadratic);
         ourShader.setVec3("viewPosition", programState->camera.Position);
         br++;
-        if(br%500==0 || pom==1){        //ovo je za sada nakon 500 iteracija, a zapravo nam treba na odredjeno osvetljenje
-            pom=1;br=0;
+        if(efekat1 && efekat2 && efekat3){        //ukljucujemo kada pojedemo sva 3 crvica
             ourShader.setFloat("material.shininess", 32.0f);
         }
 
@@ -413,9 +412,11 @@ int main() {
             model = glm::translate(model, glm::vec3(p1x, p1y, p1z));
         }
         else{
-            pribliziFast(p1x,0);
-            pribliziFast(p1y,0);
-            pribliziFast(p1z,0);
+            bool pom1,pom2,pom3;
+            pom1=pribliziFast(p1x,0);
+            pom2=pribliziFast(p1y,0);
+            pom3=pribliziFast(p1z,0);
+            efekat1=pom1 && pom2 && pom3;
             model = glm::translate(model, glm::vec3(p1x, p1y, p1z));
         }
         model = glm::rotate(model, (float)glfwGetTime()/2-82+180, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -449,9 +450,11 @@ int main() {
             model = glm::translate(model, glm::vec3(p2x, p2y, p2z));
         }
         else{
-            pribliziFast(p2x,0);
-            pribliziFast(p2y,0);
-            pribliziFast(p2z,0);
+            bool pom1,pom2,pom3;
+            pom1=pribliziFast(p2x,0);
+            pom2=pribliziFast(p2y,0);
+            pom3=pribliziFast(p2z,0);
+            efekat2=pom1 && pom2 && pom3;
             model = glm::translate(model, glm::vec3(p2x, p2y, p2z));
         }
         model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -483,9 +486,11 @@ int main() {
             model = glm::translate(model, glm::vec3(p3x, p3y, p3z));
         }
         else{
-            pribliziFast(p3x,0);
-            pribliziFast(p3y,0);
-            pribliziFast(p3z,0);
+            bool pom1,pom2,pom3;
+            pom1=pribliziFast(p3x,0);
+            pom2=pribliziFast(p3y,0);
+            pom3=pribliziFast(p3z,0);
+            efekat3=pom1 && pom2 && pom3;
             model = glm::translate(model, glm::vec3(p3x, p3y, p3z));
         }
         model = glm::rotate(model, (float)glfwGetTime()*3, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -698,11 +703,12 @@ bool priblizi(float& s, float k){                       //funkcija ce da se kori
     return false;
 }
 
-void pribliziFast(float& s,float k){
+bool pribliziFast(float& s,float k){
     if(s >= k-0.1 && s <= k+0.1)
-        return;
+        return true;
     if(s < k)
         s += 0.1;
     else
         s -= 0.1;
+    return false;
 }
