@@ -193,8 +193,17 @@ int main() {    //--------------------------------------------------------------
     // configure global opengl state
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
+
+    // Face culling
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+
+    //Blending
     glEnable(GL_BLEND);                                                           //dodajemo blending/providnost to ide nakon fragment shadera
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);                  //podesavamo faktor(ALPHA) za source i faktor(1-ALPHA) za destination
+
+
+
     //-------------------------------------------------------------------------------------------------------------------Ovde je zavrsena inicijalizacija
     // build and compile shaders
     // -------------------------
@@ -202,6 +211,7 @@ int main() {    //--------------------------------------------------------------
     Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
     Shader obicanPadobranShader("resources/shaders/riba.vs", "resources/shaders/obicanPadobran.fs");
     Shader sjajShader("resources/shaders/sjaj.vs", "resources/shaders/sjaj.fs");
+    Shader coinShader("resources/shaders/coin.vs", "resources/shaders/coin.fs");
 
 
     float skyboxVertices[] = {
@@ -555,7 +565,7 @@ int main() {    //--------------------------------------------------------------
             model = glm::translate(model,glm::vec3(0.0f,-4.0f,0.0f));
             model = glm::rotate(model, (float)glfwGetTime()*4, glm::vec3(0.0f, 1.0f, 0.0f));
             model = glm::scale(model, glm::vec3(0.5));
-            sjajShader.setMat4("model", model);
+            coinShader.setMat4("model", model);
             coinModel.Draw(sjajShader);
         }
 
@@ -690,7 +700,7 @@ void DrawImGui(ProgramState *programState) {
         ImGui::Text("B = %s\n",(active_p1)?"TRUE":"false");
         ImGui::Text("N = %s\n",(active_p2)?"TRUE":"false");
         ImGui::Text("M = %s\n",(active_p3)?"TRUE":"false");
-
+        ImGui::Text("za RESTART -> %s\n",(efekat1 && efekat2 && efekat3)?"klikni R":"ISKORISTI PRVO SVE OPCIJE 'B','N','M'");
         ImGui::DragFloat("pointLight.constant", &programState->pointLight.constant, 0.05, 0.0, 1.0);
         ImGui::DragFloat("pointLight.linear", &programState->pointLight.linear, 0.05, 0.0, 1.0);
         ImGui::DragFloat("pointLight.quadratic", &programState->pointLight.quadratic, 0.05, 0.0, 1.0);
