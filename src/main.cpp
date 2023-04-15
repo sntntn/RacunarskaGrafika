@@ -284,7 +284,8 @@ int main() {    //--------------------------------------------------------------
     padobranModel.SetShaderTextureNamePrefix("material.");
     Model zvezdaModel("resources/objects/zvezda/zvezda.obj");
     zvezdaModel.SetShaderTextureNamePrefix("material.");
-
+    Model coinModel("resources/objects/coin/coin.obj");
+    coinModel.SetShaderTextureNamePrefix("material.");
 
     PointLight& pointLight = programState->pointLight;                      //ovde pravimo osvetljenje i namestamo im vrednosti
     pointLight.position = glm::vec3(4.0f, 4.0, 0.0);
@@ -520,7 +521,6 @@ int main() {    //--------------------------------------------------------------
 //        sjajShader.setFloat("pointLight.quadratic", pointLight.quadratic);
 //        sjajShader.setVec3("viewPosition", programState->camera.Position);
 //        sjajShader.setFloat("material.shininess", 32.0f);
-
         sjajShader.setMat4("projection", projection);
         sjajShader.setMat4("view", view);
         //------------------------------------------------------------------------------
@@ -548,7 +548,18 @@ int main() {    //--------------------------------------------------------------
             model = glm::scale(model, glm::vec3(1.0f));
             sjajShader.setMat4("model", model);
             zvezdaModel.Draw(sjajShader);
+        }//-----------------------------------------------------------------------------
+        //                                           -> coin
+        if(efekat1 && efekat2 && efekat3){
+            model = glm::mat4(1.0f);
+            model = glm::translate(model,glm::vec3(0.0f,-4.0f,0.0f));
+            model = glm::rotate(model, (float)glfwGetTime()*4, glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::scale(model, glm::vec3(0.5));
+            sjajShader.setMat4("model", model);
+            coinModel.Draw(sjajShader);
         }
+
+
         //--------------------------------------------------------------------------------------------------------------------------------------------iscrtani modeli
 
 
@@ -718,7 +729,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
     if (key == GLFW_KEY_M && action == GLFW_PRESS) {
         active_p3=true;
     }
-    if (key == GLFW_KEY_R && action == GLFW_PRESS) {                                    //restartuje /igricu/ animaciju
+    if (key == GLFW_KEY_R && action == GLFW_PRESS && efekat1 && efekat2 && efekat3) {                                    //restartuje /igricu/ animaciju
         active_p1=false;
         active_p2=false;
         active_p3=false;
