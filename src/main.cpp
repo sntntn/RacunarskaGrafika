@@ -57,8 +57,10 @@ bool pojedi_p3=false;
 bool efekat1=false;
 bool efekat2=false;
 bool efekat3=false;
+bool lokalna1=false;
+bool lokalna2=false;
+bool lokalna3=false;
 
-//glm::vec3 krajnjaTacka = glm::vec3(9.80, -0.11, -6.04);
 glm::vec3 krajnjaTacka = glm::vec3(0,0,0);
 glm::vec3 padobran1 =glm::vec3(0, 0, 0);
 glm::vec3 padobran2 =glm::vec3(0, 0, 0);
@@ -67,6 +69,8 @@ float p1_scale = 2.0;
 float p2_scale = 1.0;
 float p3_scale = 1.0;
 float p1x,p1y,p1z,p2x,p2y,p2z,p3x,p3y,p3z;      //kordinate svakog padobrana
+float pointLightconstant = 0.9f;
+float pointLightquadratic = 0.039f;
 
 
 //------------------------------------------------------
@@ -98,7 +102,7 @@ struct ProgramState {
     void LoadFromFile(std::string filename);
 };
 
-void ProgramState::SaveToFile(std::string filename) {
+void ProgramState::SaveToFile(std::string filename) {                   //funkcija koja nam pamti prethodno stanje programa
     std::ofstream out(filename);
     out << clearColor.r << '\n'
         << clearColor.g << '\n'
@@ -112,9 +116,9 @@ void ProgramState::SaveToFile(std::string filename) {
         << camera.Front.z << '\n';
 }
 
-void ProgramState::LoadFromFile(std::string filename) {
-    std::ifstream in(filename);
-    if (in) {
+void ProgramState::LoadFromFile(std::string filename) {                  //funkcija koja mi zapisuje ostavljeno stanje programa
+    std::ifstream in(filename);     //posto koristimo nestruktuisan tekstualni fajl (koji ne zna sta je svaka od ovih vrednost)
+    if (in) {                          //moramo da ucitavamo iz program state fajla istim redosledom, kojim smo upisivali neke vrednosti u taj fajl
         in >> clearColor.r
            >> clearColor.g
            >> clearColor.b
@@ -128,7 +132,7 @@ void ProgramState::LoadFromFile(std::string filename) {
     }
 }
 
-ProgramState *programState;
+ProgramState *programState;             //pravimo pokazivac (alociramo ga na hipu, a u data segmentu cuvamo pokazivac na to)
 
 void DrawImGui(ProgramState *programState);
 
@@ -154,7 +158,7 @@ int main() {    //--------------------------------------------------------------
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);                                               //GLFW nam pomaze ko IO operacija
     glfwSetScrollCallback(window, scroll_callback);
     glfwSetKeyCallback(window, key_callback);
     // tell GLFW to capture our mouse
@@ -171,7 +175,7 @@ int main() {    //--------------------------------------------------------------
     stbi_set_flip_vertically_on_load(true);
 
     programState = new ProgramState;
-    programState->LoadFromFile("resources/program_state.txt");
+    programState->LoadFromFile("resources/program_state.txt");                                              //ovde mi je zapamceno prethodno stanje programa
     if (programState->ImGuiEnabled) {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
@@ -189,6 +193,8 @@ int main() {    //--------------------------------------------------------------
     // configure global opengl state
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);                                                           //dodajemo blending/providnost to ide nakon fragment shadera
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);                  //podesavamo faktor(ALPHA) za source i faktor(1-ALPHA) za destination
     //-------------------------------------------------------------------------------------------------------------------Ovde je zavrsena inicijalizacija
     // build and compile shaders
     // -------------------------
@@ -286,9 +292,9 @@ int main() {    //--------------------------------------------------------------
     pointLight.diffuse = glm::vec3(0.6, 0.6, 0.6);
     pointLight.specular = glm::vec3(1.0, 1.0, 1.0);
 
-    pointLight.constant = 0.9f;
+    pointLight.constant = pointLightconstant;
     pointLight.linear = 0.09f;
-    pointLight.quadratic = 0.039f;
+    pointLight.quadratic = pointLightquadratic;
 
 
 
@@ -297,9 +303,7 @@ int main() {    //--------------------------------------------------------------
 
     // render loop
     // -----------
-    bool lokalna1=false;
-    bool lokalna2=false;
-    bool lokalna3=false;
+
     while (!glfwWindowShouldClose(window)) {///--------------------------------------------------------------------------------------------------------Pocetak render petlje
         // per-frame time logic
         // --------------------
@@ -314,7 +318,7 @@ int main() {    //--------------------------------------------------------------
         // render---------------------------------------------------------------------------------------------------------------------------------------- pocetak crtanja modela
         // ------
         glClearColor(programState->clearColor.r, programState->clearColor.g, programState->clearColor.b, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);                  //moramo da cistimo i depth buffer ako je enable testiranje dubine (osim ako zelimo neki efekat)
 
         // don't forget to enable shader before setting uniforms
         ourShader.use();
@@ -327,12 +331,12 @@ int main() {    //--------------------------------------------------------------
             if(efekat1 && !lokalna1)lokalna1=true;
             if(efekat2 && !lokalna2)lokalna2=true;
             if(efekat3 && !lokalna3)lokalna3= true;
-            pointLight.quadratic=pointLight.quadratic-0.013f;
-            pointLight.constant=pointLight.constant-0.3f;
+            pointLightquadratic=pointLightquadratic-0.013f;
+            pointLightconstant=pointLightconstant-0.3f;
         }
-        ourShader.setFloat("pointLight.constant", pointLight.constant);
+        ourShader.setFloat("pointLight.constant", pointLightconstant);
         ourShader.setFloat("pointLight.linear", pointLight.linear);
-        ourShader.setFloat("pointLight.quadratic", pointLight.quadratic);
+        ourShader.setFloat("pointLight.quadratic", pointLightquadratic);
         ourShader.setVec3("viewPosition", programState->camera.Position);
         ourShader.setFloat("material.shininess", 42.0f);
 
@@ -352,6 +356,13 @@ int main() {    //--------------------------------------------------------------
         ourShader.setMat4("model", model);
         ourModel.Draw(ourShader);
 
+        //render zvezda sunce
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(4.0 * cos(currentFrame), 3.0f, 4.0 * sin(currentFrame)));
+        model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.8f));
+        ourShader.setMat4("model", model);
+        zvezdaModel.Draw(ourShader);
 
         //render zvezda1 rotirajuca
         if(!pojedi_p1){                                     //ako nije pojeden odgovarajuci padobranac nema jos punu boju
@@ -537,15 +548,7 @@ int main() {    //--------------------------------------------------------------
             model = glm::scale(model, glm::vec3(1.0f));
             sjajShader.setMat4("model", model);
             zvezdaModel.Draw(sjajShader);
-        }//-----------------------------------------------------------------------------
-        //render zvezda sunce
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(4.0 * cos(currentFrame), 3.0f, 4.0 * sin(currentFrame)));
-        model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(0.8f));
-        ourShader.setMat4("model", model);
-        zvezdaModel.Draw(ourShader);
-
+        }
         //--------------------------------------------------------------------------------------------------------------------------------------------iscrtani modeli
 
 
@@ -562,7 +565,7 @@ int main() {    //--------------------------------------------------------------
         glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
-        glDepthFunc(GL_LESS); // set depth function back to default
+          // set depth function back to default
 
         if (programState->ImGuiEnabled)
             DrawImGui(programState);                                                //crtamo nas ImGui
@@ -575,7 +578,7 @@ int main() {    //--------------------------------------------------------------
         glfwPollEvents();
     }///-----------------------------------------------------------------------------------------------------------------------------------------------------Kraj render petlje
 
-    programState->SaveToFile("resources/program_state.txt");
+    programState->SaveToFile("resources/program_state.txt");                        //pamtimo stanje programa u kom smo ga ostavili prethodni put
     delete programState;
     ImGui_ImplOpenGL3_Shutdown();                                                           //gasimo nas ImGui
     ImGui_ImplGlfw_Shutdown();
@@ -672,7 +675,6 @@ void DrawImGui(ProgramState *programState) {
 
 
     {
-        static float f = 0.0f;
         ImGui::Begin("Enabled effect");
         ImGui::Text("B = %s\n",(active_p1)?"TRUE":"false");
         ImGui::Text("N = %s\n",(active_p2)?"TRUE":"false");
@@ -681,18 +683,10 @@ void DrawImGui(ProgramState *programState) {
         ImGui::DragFloat("pointLight.constant", &programState->pointLight.constant, 0.05, 0.0, 1.0);
         ImGui::DragFloat("pointLight.linear", &programState->pointLight.linear, 0.05, 0.0, 1.0);
         ImGui::DragFloat("pointLight.quadratic", &programState->pointLight.quadratic, 0.05, 0.0, 1.0);
-        ImGui::End();
-    }
-
-    {
-        ImGui::Begin("Camera info");
-        const Camera& c = programState->camera;
-        ImGui::Text("Camera position: (%f, %f, %f)", c.Position.x, c.Position.y, c.Position.z);
-        ImGui::Text("(Yaw, Pitch): (%f, %f)", c.Yaw, c.Pitch);
-        ImGui::Text("Camera front: (%f, %f, %f)", c.Front.x, c.Front.y, c.Front.z);
         ImGui::Checkbox("Camera mouse update", &programState->CameraMouseMovementUpdateEnabled);
         ImGui::End();
     }
+
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -705,11 +699,11 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
             programState->CameraMouseMovementUpdateEnabled = false;
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         } else {
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);                        //ako je ImGui iskljucen -> nemamo prikazan mis
         }
     }
 
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {                                            //za lociranje kordinata
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {                          //za ispisivanje trenutnih kordinata (koristio sam kao pomoc pri postavljanju modela na scenu)
         cout << programState->camera.Position.x << " "
              << programState->camera.Position.y << " "
              << programState->camera.Position.z << '\n';
@@ -724,6 +718,26 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
     if (key == GLFW_KEY_M && action == GLFW_PRESS) {
         active_p3=true;
     }
+    if (key == GLFW_KEY_R && action == GLFW_PRESS) {                                    //restartuje /igricu/ animaciju
+        active_p1=false;
+        active_p2=false;
+        active_p3=false;
+        pojedi_p1=false;
+        pojedi_p2=false;
+        pojedi_p3=false;
+        efekat1=false;
+        efekat2=false;
+        efekat3=false;
+        lokalna1=false;
+        lokalna2=false;
+        lokalna3=false;
+        p1_scale = 2.0;
+        p2_scale = 1.0;
+        p3_scale = 1.0;
+        pointLightconstant = 0.9f;
+        pointLightquadratic = 0.039f;
+    }
+
 }
 
 bool priblizi(float& s, float k){                       //funkcija ce da se koristi za priblizavanje vrednosti s ka vrednosti k
