@@ -70,7 +70,7 @@ float p1x,p1y,p1z,p2x,p2y,p2z,p3x,p3y,p3z;      //kordinate svakog padobrana
 
 //------------------------------------------------------
 
-struct PointLight {
+struct PointLight {             //prosledjujemo vrednosti iz shadera ovde u main
     glm::vec3 position;
     glm::vec3 ambient;
     glm::vec3 diffuse;
@@ -282,15 +282,15 @@ int main() {    //--------------------------------------------------------------
     Model zvezdaModel("resources/objects/zvezda/zvezda.obj");
     zvezdaModel.SetShaderTextureNamePrefix("material.");
 
-    PointLight& pointLight = programState->pointLight;
+    PointLight& pointLight = programState->pointLight;                      //ovde pravimo osvetljenje i namestamo im vrednosti
     pointLight.position = glm::vec3(4.0f, 4.0, 0.0);
     pointLight.ambient = glm::vec3(0.1, 0.1, 0.1);
     pointLight.diffuse = glm::vec3(0.6, 0.6, 0.6);
     pointLight.specular = glm::vec3(1.0, 1.0, 1.0);
 
-    pointLight.constant = 1.0f;
+    pointLight.constant = 0.9f;
     pointLight.linear = 0.09f;
-    pointLight.quadratic = 0.032f;
+    pointLight.quadratic = 0.039f;
 
 
 
@@ -299,6 +299,9 @@ int main() {    //--------------------------------------------------------------
 
     // render loop
     // -----------
+    bool lokalna1=false;
+    bool lokalna2=false;
+    bool lokalna3=false;
     while (!glfwWindowShouldClose(window)) {///--------------------------------------------------------------------------------------------------------Pocetak render petlje
         // per-frame time logic
         // --------------------
@@ -310,7 +313,7 @@ int main() {    //--------------------------------------------------------------
         // -----
         processInput(window);
 
-
+        //pointLight.position = glm::vec3 (4.0f * cos(currentFrame), 4.0f, 4.0f * sin(currentFrame) );
         // render---------------------------------------------------------------------------------------------------------------------------------------- pocetak crtanja modela
         // ------
         glClearColor(programState->clearColor.r, programState->clearColor.g, programState->clearColor.b, 1.0f);
@@ -319,18 +322,23 @@ int main() {    //--------------------------------------------------------------
         // don't forget to enable shader before setting uniforms
         ourShader.use();
         pointLight.position = glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
+        //pointLight.position = glm::vec3(sin(glfwGetTime() / 2) * 17 -16, -3.0f, cos(glfwGetTime() / 2) * 17-16);
         ourShader.setVec3("pointLight.position", pointLight.position);
         ourShader.setVec3("pointLight.ambient", pointLight.ambient);
         ourShader.setVec3("pointLight.diffuse", pointLight.diffuse);
         ourShader.setVec3("pointLight.specular", pointLight.specular);
+        if( (efekat1 && !lokalna1) || (efekat2 && !lokalna2) || (efekat3 && !lokalna3) ){
+            if(efekat1 && !lokalna1)lokalna1=true;
+            if(efekat2 && !lokalna2)lokalna2=true;
+            if(efekat3 && !lokalna3)lokalna3= true;
+            pointLight.quadratic=pointLight.quadratic-0.013f;
+            pointLight.constant=pointLight.constant-0.3f;
+        }
         ourShader.setFloat("pointLight.constant", pointLight.constant);
         ourShader.setFloat("pointLight.linear", pointLight.linear);
         ourShader.setFloat("pointLight.quadratic", pointLight.quadratic);
         ourShader.setVec3("viewPosition", programState->camera.Position);
-        br++;
-        if(efekat1 && efekat2 && efekat3){        //ukljucujemo kada pojedemo sva 3 crvica
-            ourShader.setFloat("material.shininess", 32.0f);
-        }
+        ourShader.setFloat("material.shininess", 42.0f);
 
 
         // view/projection transformations
@@ -551,7 +559,7 @@ int main() {    //--------------------------------------------------------------
         glDepthFunc(GL_LESS); // set depth function back to default
 
         if (programState->ImGuiEnabled)
-            DrawImGui(programState);
+            DrawImGui(programState);                                                //crtamo nas ImGui
 
 
 
@@ -563,7 +571,7 @@ int main() {    //--------------------------------------------------------------
 
     programState->SaveToFile("resources/program_state.txt");
     delete programState;
-    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplOpenGL3_Shutdown();                                                           //gasimo nas ImGui
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
     // glfw: terminate, clearing all previously allocated GLFW resources.
@@ -687,8 +695,8 @@ void DrawImGui(ProgramState *programState) {
 }
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
-    if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
-        programState->ImGuiEnabled = !programState->ImGuiEnabled;
+    if (key == GLFW_KEY_I && action == GLFW_PRESS) {                                                        // klik na I za ImGui meni
+        programState->ImGuiEnabled = !programState->ImGuiEnabled;                                           //dodeljujemo suprotnu vrednost u odnosu na proslu
         if (programState->ImGuiEnabled) {
             programState->CameraMouseMovementUpdateEnabled = false;
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -703,13 +711,13 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
              << programState->camera.Position.z << '\n';
     }
 
-    if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
+    if (key == GLFW_KEY_B && action == GLFW_PRESS) {
         active_p1=true;
     }
-    if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
+    if (key == GLFW_KEY_N && action == GLFW_PRESS) {
         active_p2=true;
     }
-    if (key == GLFW_KEY_3 && action == GLFW_PRESS) {
+    if (key == GLFW_KEY_M && action == GLFW_PRESS) {
         active_p3=true;
     }
 }
