@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <string>
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
@@ -273,14 +274,11 @@ int main() {    //--------------------------------------------------------------
     // -----------
     Model ourModel("resources/objects/riba/riba.obj");
     ourModel.SetShaderTextureNamePrefix("material.");
-    Model riba1Model("resources/objects/riba1/riba1.obj");
-    riba1Model.SetShaderTextureNamePrefix("material.");
-    Model riba2Model("resources/objects/riba2/riba2.obj");
-    riba1Model.SetShaderTextureNamePrefix("material.");
     Model padobranModel("resources/objects/padobran/padobran.obj");
     padobranModel.SetShaderTextureNamePrefix("material.");
     Model zvezdaModel("resources/objects/zvezda/zvezda.obj");
     zvezdaModel.SetShaderTextureNamePrefix("material.");
+
 
     PointLight& pointLight = programState->pointLight;                      //ovde pravimo osvetljenje i namestamo im vrednosti
     pointLight.position = glm::vec3(4.0f, 4.0, 0.0);
@@ -313,7 +311,6 @@ int main() {    //--------------------------------------------------------------
         // -----
         processInput(window);
 
-        //pointLight.position = glm::vec3 (4.0f * cos(currentFrame), 4.0f, 4.0f * sin(currentFrame) );
         // render---------------------------------------------------------------------------------------------------------------------------------------- pocetak crtanja modela
         // ------
         glClearColor(programState->clearColor.r, programState->clearColor.g, programState->clearColor.b, 1.0f);
@@ -321,8 +318,7 @@ int main() {    //--------------------------------------------------------------
 
         // don't forget to enable shader before setting uniforms
         ourShader.use();
-        pointLight.position = glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
-        //pointLight.position = glm::vec3(sin(glfwGetTime() / 2) * 17 -16, -3.0f, cos(glfwGetTime() / 2) * 17-16);
+        pointLight.position = glm::vec3(4.0 * cos(currentFrame), 3.0f, 4.0 * sin(currentFrame));
         ourShader.setVec3("pointLight.position", pointLight.position);
         ourShader.setVec3("pointLight.ambient", pointLight.ambient);
         ourShader.setVec3("pointLight.diffuse", pointLight.diffuse);
@@ -361,6 +357,7 @@ int main() {    //--------------------------------------------------------------
         if(!pojedi_p1){                                     //ako nije pojeden odgovarajuci padobranac nema jos punu boju
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 2) * 17, -3.0f, cos(glfwGetTime() / 2) * 17));
+            //model = glm::translate(model, glm::vec3(4.0 * cos(currentFrame), 3.0f, 4.0 * sin(currentFrame)));
             model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
             model = glm::scale(model, glm::vec3(2.0f));
             ourShader.setMat4("model", model);
@@ -519,6 +516,7 @@ int main() {    //--------------------------------------------------------------
         if(pojedi_p1){                          //zvezda1 sa punom bojom -> sjaj shaderom kada je zavrseno skaliranje padobrana
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 2) * 17, -3.0f, cos(glfwGetTime() / 2) * 17));
+            //model = glm::translate(model, glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame)));
             model = glm::rotate(model, (float)glfwGetTime()*4, glm::vec3(0.0f, 1.0f, 0.0f));
             model = glm::scale(model, glm::vec3(2.0f));
             sjajShader.setMat4("model", model);
@@ -539,7 +537,15 @@ int main() {    //--------------------------------------------------------------
             model = glm::scale(model, glm::vec3(1.0f));
             sjajShader.setMat4("model", model);
             zvezdaModel.Draw(sjajShader);
-        }
+        }//-----------------------------------------------------------------------------
+        //render zvezda sunce
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(4.0 * cos(currentFrame), 3.0f, 4.0 * sin(currentFrame)));
+        model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.8f));
+        ourShader.setMat4("model", model);
+        zvezdaModel.Draw(ourShader);
+
         //--------------------------------------------------------------------------------------------------------------------------------------------iscrtani modeli
 
 
@@ -667,12 +673,10 @@ void DrawImGui(ProgramState *programState) {
 
     {
         static float f = 0.0f;
-        ImGui::Begin("Hello window");
-        ImGui::Text("Hello text");
-        ImGui::SliderFloat("Float slider", &f, 0.0, 1.0);
-        ImGui::ColorEdit3("Background color", (float *) &programState->clearColor);
-        ImGui::DragFloat3("Backpack position", (float*)&programState->ribaPosition);
-        ImGui::DragFloat("Backpack scale", &programState->ribaScale, 0.05, 0.1, 4.0);
+        ImGui::Begin("Enabled effect");
+        ImGui::Text("B = %s\n",(active_p1)?"TRUE":"false");
+        ImGui::Text("N = %s\n",(active_p2)?"TRUE":"false");
+        ImGui::Text("M = %s\n",(active_p3)?"TRUE":"false");
 
         ImGui::DragFloat("pointLight.constant", &programState->pointLight.constant, 0.05, 0.0, 1.0);
         ImGui::DragFloat("pointLight.linear", &programState->pointLight.linear, 0.05, 0.0, 1.0);
