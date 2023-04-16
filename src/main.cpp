@@ -30,6 +30,8 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 
 unsigned int loadCubemap(vector<std::string> faces);
 
+void setLights(Shader shaderName);
+
 bool priblizi(float& s, float k); //priblizava s ka k za +-0.01
 bool pribliziFast(float& s,float k); //priblizava s ka k za +-0.1
 
@@ -45,6 +47,13 @@ bool firstMouse = true;
 // timing
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+
+bool spotlightOn = false;
+bool blinn = true;
+
+// lightPos
+glm::vec3 lightPos(-4.5f, 2.5f, 2.0f);
+
 
 int br=0;
 int pom=0;
@@ -157,7 +166,7 @@ int main() {    //--------------------------------------------------------------
         return -1;
     }
     glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);          //pozivamo svaki put kad se velicina prozora promeni
     glfwSetCursorPosCallback(window, mouse_callback);                                               //GLFW nam pomaze ko IO operacija
     glfwSetScrollCallback(window, scroll_callback);
     glfwSetKeyCallback(window, key_callback);
@@ -212,6 +221,7 @@ int main() {    //--------------------------------------------------------------
     Shader obicanPadobranShader("resources/shaders/riba.vs", "resources/shaders/obicanPadobran.fs");
     Shader sjajShader("resources/shaders/sjaj.vs", "resources/shaders/sjaj.fs");
     Shader coinShader("resources/shaders/coin.vs", "resources/shaders/coin.fs");
+    Shader kockaShader("6.2.coordinate_systems.vs", "6.2.coordinate_systems.fs");
 
 
     float skyboxVertices[] = {
@@ -531,8 +541,17 @@ int main() {    //--------------------------------------------------------------
 //        sjajShader.setFloat("pointLight.quadratic", pointLight.quadratic);
 //        sjajShader.setVec3("viewPosition", programState->camera.Position);
 //        sjajShader.setFloat("material.shininess", 32.0f);
+//        sjajShader.setMat4("projection", projection);
+//        sjajShader.setMat4("view", view);
+        setLights(sjajShader);
+        sjajShader.setFloat("material.shininess", 100.0f);
+        // view/projection transformations
+        projection = glm::perspective(glm::radians(programState->camera.Zoom),
+                                                (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f);
+        view = programState->camera.GetViewMatrix();
         sjajShader.setMat4("projection", projection);
         sjajShader.setMat4("view", view);
+        sjajShader.setInt("blinn", blinn);
         //------------------------------------------------------------------------------
         if(pojedi_p1){                          //zvezda1 sa punom bojom -> sjaj shaderom kada je zavrseno skaliranje padobrana
             model = glm::mat4(1.0f);
@@ -595,7 +614,7 @@ int main() {    //--------------------------------------------------------------
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(window);                //jedan baffer koristi za pisanje drugi za citanje
         glfwPollEvents();
     }///-----------------------------------------------------------------------------------------------------------------------------------------------------Kraj render petlje
 
@@ -758,6 +777,16 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
         pointLightconstant = 0.9f;
         pointLightquadratic = 0.039f;
     }
+    if (key == GLFW_KEY_P && action == GLFW_PRESS)
+    {
+        blinn = !blinn;
+
+    }
+
+    if (key == GLFW_KEY_O && action == GLFW_PRESS)
+    {
+        spotlightOn = !spotlightOn;
+    }
 
 }
 
@@ -779,4 +808,41 @@ bool pribliziFast(float& s,float k){
     else
         s -= 0.1;
     return false;
+}
+
+void setLights(Shader shaderName){
+    shaderName.setVec3("light.position", lightPos);
+    shaderName.setVec3("viewPos", programState->camera.Position);
+
+    // directional light
+    shaderName.setVec3("dirLight.direction", 0.0f, -1.0, 0.0f);
+    shaderName.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+    shaderName.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+    shaderName.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+    //pointlight properties
+    shaderName.setVec3("pointLights[0].position", lightPos);
+    shaderName.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
+    shaderName.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+    shaderName.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+    shaderName.setFloat("pointLights[0].constant", 1.0f);
+    shaderName.setFloat("pointLights[0].linear", 0.09f);
+    shaderName.setFloat("pointLights[0].quadratic", 0.032f);
+    // spotLight
+    shaderName.setVec3("spotLight.position", programState->camera.Position);
+    shaderName.setVec3("spotLight.direction", programState->camera.Front);
+    shaderName.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+    if(spotlightOn){
+        shaderName.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+        shaderName.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+    }
+    else{
+        shaderName.setVec3("spotLight.diffuse", 0.0f, 0.0f, 0.0f);
+        shaderName.setVec3("spotLight.specular", 0.0f, 0.0f, 0.0f);
+    }
+
+    shaderName.setFloat("spotLight.constant", 0.0f);
+    shaderName.setFloat("spotLight.linear", 0.09f);
+    shaderName.setFloat("spotLight.quadratic", 0.0f);
+    shaderName.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+    shaderName.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 }
