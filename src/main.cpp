@@ -57,8 +57,6 @@ bool blinn = true;
 glm::vec3 lightPos(0.0f, -4.5f, 0.0f);
 
 
-int br=0;
-int pom=0;
 bool active_p1=false;
 bool active_p2=false;
 bool active_p3=false;
@@ -72,10 +70,6 @@ bool lokalna1=false;
 bool lokalna2=false;
 bool lokalna3=false;
 
-glm::vec3 krajnjaTacka = glm::vec3(0,0,0);
-glm::vec3 padobran1 =glm::vec3(0, 0, 0);
-glm::vec3 padobran2 =glm::vec3(0, 0, 0);
-glm::vec3 padobran3 =glm::vec3(0, 0, 0);
 float p1_scale = 2.0;
 float p2_scale = 1.0;
 float p3_scale = 1.0;
@@ -219,9 +213,9 @@ int main() {    //--------------------------------------------------------------
     // build and compile shaders
     // -------------------------
     Shader ourShader("resources/shaders/sjaj.vs", "resources/shaders/sjaj.fs");
-    Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
     Shader obicanPadobranShader("resources/shaders/sjaj.vs", "resources/shaders/sjaj.fs");
     Shader sjajShader("resources/shaders/sjaj.vs", "resources/shaders/sjaj.fs");
+    Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
     Shader boxShader("resources/shaders/box.vs", "resources/shaders/box.fs");
     Shader cloudShader("resources/shaders/cloud.vs", "resources/shaders/cloud.fs");
 
@@ -459,27 +453,7 @@ int main() {    //--------------------------------------------------------------
 
         // don't forget to enable shader before setting uniforms
         ourShader.use();
-/*
-        pointLight.position = glm::vec3(4.0 * cos(currentFrame), 3.0f, 4.0 * sin(currentFrame));
-        ourShader.setVec3("pointLight.position", pointLight.position);
-        ourShader.setVec3("pointLight.ambient", pointLight.ambient);
-        ourShader.setVec3("pointLight.diffuse", pointLight.diffuse);
-        ourShader.setVec3("pointLight.specular", pointLight.specular);
-        if( (efekat1 && !lokalna1) || (efekat2 && !lokalna2) || (efekat3 && !lokalna3) ){
-            if(efekat1 && !lokalna1)lokalna1=true;
-            if(efekat2 && !lokalna2)lokalna2=true;
-            if(efekat3 && !lokalna3)lokalna3= true;
-            pointLightquadratic=pointLightquadratic-0.013f;
-            pointLightconstant=pointLightconstant-0.3f;
-        }
-        ourShader.setFloat("pointLight.constant", pointLightconstant);
-        ourShader.setFloat("pointLight.linear", pointLight.linear);
-        ourShader.setFloat("pointLight.quadratic", pointLightquadratic);
-        ourShader.setVec3("viewPosition", programState->camera.Position);
-        ourShader.setFloat("material.shininess", 42.0f);
-*/
         setLights(ourShader);
-        ///--
         pointLight.position = glm::vec3(4.0 * cos(currentFrame), 3.0f, 4.0 * sin(currentFrame));
         ourShader.setVec3("light.position", pointLight.position);
         ourShader.setVec3("pointLights[0].position", pointLight.position);
@@ -496,8 +470,6 @@ int main() {    //--------------------------------------------------------------
         ourShader.setFloat("pointLights[0].constant", pointLightconstant);
         ourShader.setFloat("pointLights[0].linear", pointLight.linear);
         ourShader.setFloat("pointLights[0].quadratic", pointLightquadratic);
-
-        ///--
         ourShader.setFloat("material.shininess", 100.0f);
 
         // view/projection transformations
@@ -538,14 +510,14 @@ int main() {    //--------------------------------------------------------------
         obicanPadobranShader.setInt("blinn", blinn);
 
 
-        //render padobran u ribi
+/*        //render padobran u ribi
         model = glm::mat4(1.0f);
         model = glm::translate(model, krajnjaTacka);
         model = glm::rotate(model, glm::radians(-75.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         model = glm::scale(model, glm::vec3(0.2f));
         obicanPadobranShader.setMat4("model", model);
         padobranModel.Draw(obicanPadobranShader);
-
+*/
         //render padobran1 ka ribi
         model = glm::mat4(1.0f);
         if(!pojedi_p1){
@@ -922,6 +894,8 @@ void DrawImGui(ProgramState *programState) {
         ImGui::Text("za RESTART -> %s\n",(efekat1 && efekat2 && efekat3)?"klikni R":"ISKORISTI PRVO SVE OPCIJE 'B','N','M'");
         ImGui::DragFloat("pointLight.constant", &pointLightconstant, 0.05, 0.0, 1.0);
         ImGui::DragFloat("pointLight.quadratic", &pointLightquadratic, 0.05, 0.0, 1.0);
+        ImGui::Text("Press 'O' for SPOTLIGHT\n");
+        ImGui::Text("Press 'P' for BLINN\n");
         ImGui::Checkbox("Camera mouse update", &programState->CameraMouseMovementUpdateEnabled);
         ImGui::End();
     }
