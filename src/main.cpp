@@ -783,6 +783,14 @@ int main() {    //--------------------------------------------------------------
         glfwPollEvents();
     }///-----------------------------------------------------------------------------------------------------------------------------------------------------Kraj render petlje
 
+
+    glDeleteVertexArrays(1, &boxVAO);
+    glDeleteBuffers(1, &boxVBO);
+    glDeleteVertexArrays(1, &transparentVAO);
+    glDeleteBuffers(1, &transparentVBO);                                        //da ne bi bilo curenja memorije
+    glDeleteVertexArrays(1, &skyboxVAO);
+    glDeleteBuffers(1, &skyboxVAO);
+
     programState->SaveToFile("resources/program_state.txt");                        //pamtimo stanje programa u kom smo ga ostavili prethodni put
     delete programState;
     ImGui_ImplOpenGL3_Shutdown();                                                           //gasimo nas ImGui
