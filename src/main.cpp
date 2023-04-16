@@ -54,7 +54,7 @@ bool spotlightOn = false;
 bool blinn = true;
 
 // lightPos
-glm::vec3 lightPos(-4.5f, 2.5f, 2.0f);
+glm::vec3 lightPos(0.0f, -4.5f, 0.0f);
 
 
 int br=0;
@@ -367,12 +367,12 @@ int main() {    //--------------------------------------------------------------
 
     vector<glm::vec3> clouds
             {
-                    glm::vec3(-6.5f, 2.0f, -0.48f),
-                    glm::vec3( 3.5f, 4.0f, 1.51f),
-                    glm::vec3( 2.0f, 1.5f, 0.7f),
-                    glm::vec3(-4.3f, 3.5f, -2.3f),
-                    glm::vec3( 6.0f, 4.5f, -1.6f),
-                    glm::vec3( 0.0f, 4.0f, -1.6f)
+                    glm::vec3(-6.5f +5, 2.0f+3, -0.48f -2),
+                    glm::vec3( 3.5f +5, 4.0f, 1.51f -2),
+                    glm::vec3( 2.0f +5, 1.5f, 0.7f -2),
+                    glm::vec3(-4.3f +5, 3.5f, -2.3f -2),
+                    glm::vec3( 6.0f +5, 4.5f, -1.6f -2),
+                    glm::vec3( 0.0f +5, 4.0f, -1.6f -2)
 
             };                      ///TODO podesiti kordinate
 
@@ -712,28 +712,30 @@ int main() {    //--------------------------------------------------------------
 
         // box
         // bind diffuse map
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, boxDiffuse);
+        if(!(efekat1 && efekat2 && efekat3)){
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, boxDiffuse);
 
-        // bind specular map
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, boxSpecular);
+            // bind specular map
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, boxSpecular);
 
-        // bind emission map
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, boxAmbient);
-        boxShader.use();
-        setLights(boxShader);
-        boxShader.setFloat("material.shininess", 64.0f);
-        boxShader.setMat4("projection", projection);
-        boxShader.setMat4("view", view);
-        glBindVertexArray(boxVAO);
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 3.0f, 0.0f));
-        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, -1.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(1.0f));
-        boxShader.setMat4("model", model);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+            // bind emission map
+            glActiveTexture(GL_TEXTURE2);
+            glBindTexture(GL_TEXTURE_2D, boxAmbient);
+            boxShader.use();
+            setLights(boxShader);
+            boxShader.setFloat("material.shininess", 64.0f);
+            boxShader.setMat4("projection", projection);
+            boxShader.setMat4("view", view);
+            glBindVertexArray(boxVAO);
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(0.0f, -4.0f, 0.0f));
+            model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, -1.0f, 0.0f));
+            model = glm::scale(model, glm::vec3(1.0f));
+            boxShader.setMat4("model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
 
         cloudShader.use();                                                          //transparent cloud
