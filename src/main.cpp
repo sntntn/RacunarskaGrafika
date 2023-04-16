@@ -80,7 +80,7 @@ float p1_scale = 2.0;
 float p2_scale = 1.0;
 float p3_scale = 1.0;
 float p1x,p1y,p1z,p2x,p2y,p2z,p3x,p3y,p3z;      //kordinate svakog padobrana
-float pointLightconstant = 0.9f;
+float pointLightconstant = 0.09f;
 float pointLightquadratic = 0.039f;
 
 
@@ -218,7 +218,7 @@ int main() {    //--------------------------------------------------------------
     //-------------------------------------------------------------------------------------------------------------------Ovde je zavrsena inicijalizacija
     // build and compile shaders
     // -------------------------
-    Shader ourShader("resources/shaders/riba.vs", "resources/shaders/riba.fs");
+    Shader ourShader("resources/shaders/sjaj.vs", "resources/shaders/sjaj.fs");
     Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
     Shader obicanPadobranShader("resources/shaders/sjaj.vs", "resources/shaders/sjaj.fs");
     Shader sjajShader("resources/shaders/sjaj.vs", "resources/shaders/sjaj.fs");
@@ -459,6 +459,7 @@ int main() {    //--------------------------------------------------------------
 
         // don't forget to enable shader before setting uniforms
         ourShader.use();
+/*
         pointLight.position = glm::vec3(4.0 * cos(currentFrame), 3.0f, 4.0 * sin(currentFrame));
         ourShader.setVec3("pointLight.position", pointLight.position);
         ourShader.setVec3("pointLight.ambient", pointLight.ambient);
@@ -476,7 +477,28 @@ int main() {    //--------------------------------------------------------------
         ourShader.setFloat("pointLight.quadratic", pointLightquadratic);
         ourShader.setVec3("viewPosition", programState->camera.Position);
         ourShader.setFloat("material.shininess", 42.0f);
+*/
+        setLights(ourShader);
+        ///--
+        pointLight.position = glm::vec3(4.0 * cos(currentFrame), 3.0f, 4.0 * sin(currentFrame));
+        ourShader.setVec3("light.position", pointLight.position);
+        ourShader.setVec3("pointLights[0].position", pointLight.position);
+        ourShader.setVec3("pointLights[0].ambient", pointLight.ambient);
+        ourShader.setVec3("pointLights[0].diffuse", pointLight.diffuse);
+        ourShader.setVec3("pointLights[0].specular", pointLight.specular);
+        if( (efekat1 && !lokalna1) || (efekat2 && !lokalna2) || (efekat3 && !lokalna3) ){
+            if(efekat1 && !lokalna1)lokalna1=true;
+            if(efekat2 && !lokalna2)lokalna2=true;
+            if(efekat3 && !lokalna3)lokalna3= true;
+            pointLightquadratic=pointLightquadratic-0.013f;
+            pointLightconstant=pointLightconstant-0.03f;
+        }
+        ourShader.setFloat("pointLights[0].constant", pointLightconstant);
+        ourShader.setFloat("pointLights[0].linear", pointLight.linear);
+        ourShader.setFloat("pointLights[0].quadratic", pointLightquadratic);
 
+        ///--
+        ourShader.setFloat("material.shininess", 100.0f);
 
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(programState->camera.Zoom),
@@ -484,7 +506,7 @@ int main() {    //--------------------------------------------------------------
         glm::mat4 view = programState->camera.GetViewMatrix();
         ourShader.setMat4("projection", projection);
         ourShader.setMat4("view", view);
-
+        sjajShader.setInt("blinn", blinn);
 
         // render the main model                                          -> GLAVNA ZLATNA RIBICA
         glm::mat4 model = glm::mat4(1.0f);
@@ -898,9 +920,8 @@ void DrawImGui(ProgramState *programState) {
         ImGui::Text("N = %s\n",(active_p2)?"TRUE":"false");
         ImGui::Text("M = %s\n",(active_p3)?"TRUE":"false");
         ImGui::Text("za RESTART -> %s\n",(efekat1 && efekat2 && efekat3)?"klikni R":"ISKORISTI PRVO SVE OPCIJE 'B','N','M'");
-        ImGui::DragFloat("pointLight.constant", &programState->pointLight.constant, 0.05, 0.0, 1.0);
-        ImGui::DragFloat("pointLight.linear", &programState->pointLight.linear, 0.05, 0.0, 1.0);
-        ImGui::DragFloat("pointLight.quadratic", &programState->pointLight.quadratic, 0.05, 0.0, 1.0);
+        ImGui::DragFloat("pointLight.constant", &pointLightconstant, 0.05, 0.0, 1.0);
+        ImGui::DragFloat("pointLight.quadratic", &pointLightquadratic, 0.05, 0.0, 1.0);
         ImGui::Checkbox("Camera mouse update", &programState->CameraMouseMovementUpdateEnabled);
         ImGui::End();
     }
@@ -952,7 +973,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
         p1_scale = 2.0;
         p2_scale = 1.0;
         p3_scale = 1.0;
-        pointLightconstant = 0.9f;
+        pointLightconstant = 0.09f;
         pointLightquadratic = 0.039f;
     }
     if (key == GLFW_KEY_P && action == GLFW_PRESS)
