@@ -220,9 +220,8 @@ int main() {    //--------------------------------------------------------------
     // -------------------------
     Shader ourShader("resources/shaders/riba.vs", "resources/shaders/riba.fs");
     Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
-    Shader obicanPadobranShader("resources/shaders/riba.vs", "resources/shaders/obicanPadobran.fs");
+    Shader obicanPadobranShader("resources/shaders/sjaj.vs", "resources/shaders/sjaj.fs");
     Shader sjajShader("resources/shaders/sjaj.vs", "resources/shaders/sjaj.fs");
-    Shader coinShader("resources/shaders/coin.vs", "resources/shaders/coin.fs");
     Shader boxShader("resources/shaders/box.vs", "resources/shaders/box.fs");
     Shader cloudShader("resources/shaders/cloud.vs", "resources/shaders/cloud.fs");
 
@@ -502,52 +501,19 @@ int main() {    //--------------------------------------------------------------
         ourShader.setMat4("model", model);
         zvezdaModel.Draw(ourShader);
 
-        //render zvezda1 rotirajuca
-        if(!pojedi_p1){                                     //ako nije pojeden odgovarajuci padobranac nema jos punu boju
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 2) * 17, -3.0f, cos(glfwGetTime() / 2) * 17));
-            //model = glm::translate(model, glm::vec3(4.0 * cos(currentFrame), 3.0f, 4.0 * sin(currentFrame)));
-            model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
-            model = glm::scale(model, glm::vec3(2.0f));
-            ourShader.setMat4("model", model);
-            zvezdaModel.Draw(ourShader);
-        }
 
 
-        //render zvezda2 rotirajuca
-        if(!pojedi_p2){
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 4) * 14.5, -9.0f, cos(glfwGetTime() / 2) * 14.5));
-            model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
-            model = glm::scale(model, glm::vec3(1.0f));
-            ourShader.setMat4("model", model);
-            zvezdaModel.Draw(ourShader);
-        }
 
-        //render zvezda3 rotirajuca
-        if(!pojedi_p3){
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(-sin(glfwGetTime() / 4) * 4, -9.0f, -cos(glfwGetTime() / 2) * 4));
-            model = glm::rotate(model, (float)glfwGetTime()*3, glm::vec3(0.0f, 1.0f, 0.0f));
-            model = glm::scale(model, glm::vec3(1.0f));
-            ourShader.setMat4("model", model);
-            zvezdaModel.Draw(ourShader);
-        }
-
-
-        obicanPadobranShader.use();      //-----------------------------------------------------------------------------------obicanPadobranshader
-//        obicanPadobranShader.setVec3("pointLight.position", pointLight.position);
-//        obicanPadobranShader.setVec3("pointLight.ambient", pointLight.ambient);
-//        obicanPadobranShader.setVec3("pointLight.diffuse", pointLight.diffuse);
-//        obicanPadobranShader.setVec3("pointLight.specular", pointLight.specular);
-//        obicanPadobranShader.setFloat("pointLight.constant", pointLight.constant);
-//        obicanPadobranShader.setFloat("pointLight.linear", pointLight.linear);
-//        obicanPadobranShader.setFloat("pointLight.quadratic", pointLight.quadratic);
-//        obicanPadobranShader.setVec3("viewPosition", programState->camera.Position);
-//        obicanPadobranShader.setFloat("material.shininess", 32.0f);
-
+        obicanPadobranShader.use();      ///-----------------------------------------------------------------------------------obicanPadobranshader
+        setLights(sjajShader);
+        obicanPadobranShader.setFloat("material.shininess", 100.0f);
+        // view/projection transformations
+        projection = glm::perspective(glm::radians(programState->camera.Zoom),
+                                      (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f);
+        view = programState->camera.GetViewMatrix();
         obicanPadobranShader.setMat4("projection", projection);
         obicanPadobranShader.setMat4("view", view);
+        obicanPadobranShader.setInt("blinn", blinn);
 
 
         //render padobran u ribi
@@ -576,6 +542,7 @@ int main() {    //--------------------------------------------------------------
         }
         model = glm::rotate(model, (float)glfwGetTime()/2-82+180, glm::vec3(0.0f, 1.0f, 0.0f));
         if(active_p1){
+            obicanPadobranShader.setVec3("dirLight.ambient", 1.0f, 1.0f, 1.0f);        //aktivirali smo padobran, vise nije skriven
             pojedi_p1=priblizi(p1_scale,0.2);
             model = glm::scale(model, glm::vec3(p1_scale));
         }
@@ -584,6 +551,7 @@ int main() {    //--------------------------------------------------------------
         }
         obicanPadobranShader.setMat4("model", model);
         padobranModel.Draw(obicanPadobranShader);
+        obicanPadobranShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);        //vracamo ambijentalnu da ne bi uticalo na druge padobrane
         //----------------------------------------------------------------------------
 
 
@@ -607,6 +575,7 @@ int main() {    //--------------------------------------------------------------
         }
         model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
         if(active_p2){
+            obicanPadobranShader.setVec3("dirLight.ambient", 1.0f, 1.0f, 1.0f);        //aktivirali smo padobran, vise nije skriven
             pojedi_p2=priblizi(p2_scale,0.2);
             model = glm::scale(model, glm::vec3(p2_scale));
         }
@@ -615,6 +584,8 @@ int main() {    //--------------------------------------------------------------
         }
         obicanPadobranShader.setMat4("model", model);
         padobranModel.Draw(obicanPadobranShader);
+        obicanPadobranShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);        //vracamo ambijentalnu da ne bi uticalo na druge padobrane
+
         //------------------------------------------------------------------------------
 
 
@@ -636,6 +607,7 @@ int main() {    //--------------------------------------------------------------
         }
         model = glm::rotate(model, (float)glfwGetTime()*3, glm::vec3(0.0f, 1.0f, 0.0f));
         if(active_p3){
+            obicanPadobranShader.setVec3("dirLight.ambient", 1.0f, 1.0f, 1.0f);        //aktivirali smo padobran, vise nije skriven
             pojedi_p3=priblizi(p3_scale,0.2);
             model = glm::scale(model, glm::vec3(p3_scale));
         }
@@ -644,22 +616,13 @@ int main() {    //--------------------------------------------------------------
         }
         obicanPadobranShader.setMat4("model", model);
         padobranModel.Draw(obicanPadobranShader);
+        obicanPadobranShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);        //vracamo ambijentalnu da ne bi uticalo na druge padobrane
 
 
 
 
-        sjajShader.use();   //-----------------------------------------------------------------------------------------------sjajShader
-//        sjajShader.setVec3("pointLight.position", pointLight.position);
-//        sjajShader.setVec3("pointLight.ambient", pointLight.ambient);
-//        sjajShader.setVec3("pointLight.diffuse", pointLight.diffuse);
-//        sjajShader.setVec3("pointLight.specular", pointLight.specular);
-//        sjajShader.setFloat("pointLight.constant", pointLight.constant);
-//        sjajShader.setFloat("pointLight.linear", pointLight.linear);
-//        sjajShader.setFloat("pointLight.quadratic", pointLight.quadratic);
-//        sjajShader.setVec3("viewPosition", programState->camera.Position);
-//        sjajShader.setFloat("material.shininess", 32.0f);
-//        sjajShader.setMat4("projection", projection);
-//        sjajShader.setMat4("view", view);
+
+        sjajShader.use();   ///-----------------------------------------------------------------------------------------------sjajShader
         setLights(sjajShader);
         sjajShader.setFloat("material.shininess", 100.0f);
         // view/projection transformations
@@ -669,8 +632,21 @@ int main() {    //--------------------------------------------------------------
         sjajShader.setMat4("projection", projection);
         sjajShader.setMat4("view", view);
         sjajShader.setInt("blinn", blinn);
-        //------------------------------------------------------------------------------
-        if(pojedi_p1){                          //zvezda1 sa punom bojom -> sjaj shaderom kada je zavrseno skaliranje padobrana
+
+
+
+        //render zvezda1 rotirajuca
+        if(!pojedi_p1){                                     //ako nije pojeden odgovarajuci padobranac nema jos punu boju
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 2) * 17, -3.0f, cos(glfwGetTime() / 2) * 17));
+            //model = glm::translate(model, glm::vec3(4.0 * cos(currentFrame), 3.0f, 4.0 * sin(currentFrame)));
+            model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::scale(model, glm::vec3(2.0f));
+            sjajShader.setMat4("model", model);
+            zvezdaModel.Draw(sjajShader);
+        }
+        else{                          //zvezda1 sa punom bojom -> sjaj shaderom kada je zavrseno skaliranje padobrana
+            sjajShader.setVec3("dirLight.ambient", 1.0f, 1.0f, 1.0f);
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 2) * 17, -3.0f, cos(glfwGetTime() / 2) * 17));
             //model = glm::translate(model, glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame)));
@@ -678,31 +654,58 @@ int main() {    //--------------------------------------------------------------
             model = glm::scale(model, glm::vec3(2.0f));
             sjajShader.setMat4("model", model);
             zvezdaModel.Draw(sjajShader);
-        }//----------------------------------------------------------------------------
-        if(pojedi_p2){                  //zvezda2 sa punom bojom -> sjaj shaderom kada je zavrseno skaliranje padobrana
+            sjajShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+        }//-----------------------------------------------------------------------------
+
+        //render zvezda2 rotirajuca
+        if(!pojedi_p2){
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 4) * 14.5, -9.0f, cos(glfwGetTime() / 2) * 14.5));
+            model = glm::rotate(model, (float)glfwGetTime()/2-82, glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::scale(model, glm::vec3(1.0f));
+            sjajShader.setMat4("model", model);
+            zvezdaModel.Draw(sjajShader);
+        }
+        else{                  //zvezda2 sa punom bojom -> sjaj shaderom kada je zavrseno skaliranje padobrana
+            sjajShader.setVec3("dirLight.ambient", 1.0f, 1.0f, 1.0f);
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(sin(glfwGetTime() / 4) * 14.5, -9.0f, cos(glfwGetTime() / 2) * 14.5));
             model = glm::rotate(model, (float)glfwGetTime()*4, glm::vec3(0.0f, 1.0f, 0.0f));
             model = glm::scale(model, glm::vec3(1.0f));
             sjajShader.setMat4("model", model);
             zvezdaModel.Draw(sjajShader);
+            sjajShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
         }//-----------------------------------------------------------------------------
-        if(pojedi_p3){                      //zvezda3 sa punom bojom -> sjaj shaderom kada je zavrseno skaliranje padobrana
+
+        //render zvezda3 rotirajuca
+        if(!pojedi_p3){
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(-sin(glfwGetTime() / 4) * 4, -9.0f, -cos(glfwGetTime() / 2) * 4));
+            model = glm::rotate(model, (float)glfwGetTime()*3, glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::scale(model, glm::vec3(1.0f));
+            sjajShader.setMat4("model", model);
+            zvezdaModel.Draw(ourShader);
+        }
+        else{                      //zvezda3 sa punom bojom -> sjaj shaderom kada je zavrseno skaliranje padobrana
+            sjajShader.setVec3("dirLight.ambient", 1.0f, 1.0f, 1.0f);
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(-sin(glfwGetTime() / 4) * 4, -9.0f, -cos(glfwGetTime() / 2) * 4));
             model = glm::rotate(model, (float)glfwGetTime()*4, glm::vec3(0.0f, 1.0f, 0.0f));
             model = glm::scale(model, glm::vec3(1.0f));
             sjajShader.setMat4("model", model);
             zvezdaModel.Draw(sjajShader);
+            sjajShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
         }//-----------------------------------------------------------------------------
         //                                           -> coin
         if(efekat1 && efekat2 && efekat3){
+            sjajShader.setVec3("dirLight.ambient", 1.0f, 1.0f, 1.0f);
             model = glm::mat4(1.0f);
             model = glm::translate(model,glm::vec3(0.0f,-4.0f,0.0f));
             model = glm::rotate(model, (float)glfwGetTime()*4, glm::vec3(0.0f, 1.0f, 0.0f));
             model = glm::scale(model, glm::vec3(0.5));
-            coinShader.setMat4("model", model);
+            sjajShader.setMat4("model", model);
             coinModel.Draw(sjajShader);
+            sjajShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
         }
 
 
