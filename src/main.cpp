@@ -998,9 +998,9 @@ void DrawImGui(ProgramState *programState) {
         ImGui::Text("za RESTART -> %s\n",(efekat1 && efekat2 && efekat3)?"klikni R":"ISKORISTI PRVO SVE OPCIJE 'B','N','M'");
         ImGui::DragFloat("pointLight.constant", &pointLightconstant, 0.05, 0.0, 1.0);
         ImGui::DragFloat("pointLight.quadratic", &pointLightquadratic, 0.05, 0.0, 1.0);
-        ImGui::Text("Press 'O' for SPOTLIGHT\n");
-        ImGui::Text("Press 'P' for BLINN\n\n");
-        ImGui::Text("Press 'Q' for exposure (-)  |  'E' for exposure (+) \n");
+        ImGui::Text("Press 'O' for SPOTLIGHT    |   'P' for BLINN\n");
+        ImGui::Text("Press '1' for HDR          |   'P' for Bloom\n");
+        ImGui::Text("Press 'Q' for exposure (-) |  'E' for exposure (+) \n");
         ImGui::DragFloat("exposure", &exposure, 0.05, 0.0, 1.0);
         ImGui::Checkbox("Camera mouse update", &programState->CameraMouseMovementUpdateEnabled);
         ImGui::End();
