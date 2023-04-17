@@ -69,7 +69,7 @@ ImGui:\
 
 ### [Youtube video prezentacija bez HDR](https://www.youtube.com/watch?v=PqqQ0k7qxVU)
 ### [Youtube video prezentacija sa HDR](https://www.youtube.com/watch?v=22H2bCjXMRk)
-### [Youtube video prezentacija HDR i BLOOM](https://www.youtube.com/watch?v=tDqgZCeTs5E)
+### [Youtube video prezentacija HDR i BLOOM](https://www.youtube.com/watch?v=DAeUchHD-hc)
 
 Autor: Vukasin Markovic 312/2019
 
