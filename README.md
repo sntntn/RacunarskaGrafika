@@ -8,7 +8,8 @@ Dodatne teme:
 Iz grupe A:
 - [x] Cubemaps (Skybox)
 
-
+Iz grupe B:
+- [x] HDR (exposure)
 
 
 
@@ -48,7 +49,10 @@ Ukljucivanje/Iskljucivanje:\
 `R` RESTART (omoguceno nam je kada nam izadje novcic)
 
 `P` Blinn\
-`O` SpotLight\
+`O` SpotLight
+
+`Q` Exposure +\
+`E` Exposure -
 ---
 ImGui:\
 `I` otvaranje/zatvaranje ImGui prozora
@@ -60,7 +64,8 @@ ImGui:\
 [Riba](https://rigmodels.com/model.php?view=Fish-3d-model__L5GWQCNY48U447XE7EQDWOFVC&searchkeyword=fish&manualsearch=1)
 
 
-## [Youtube video prezentacija](https://www.youtube.com/watch?v=PqqQ0k7qxVU)
+### [Youtube video prezentacija bez HDR-a](https://www.youtube.com/watch?v=PqqQ0k7qxVU)
+### [Youtube video prezentacija sa HDR-om](https://www.youtube.com/watch?v=22H2bCjXMRk)
 
 Autor: Vukasin Markovic 312/2019
 

@@ -1,6 +1,7 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "stb_image.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -409,7 +410,7 @@ int main() {    //--------------------------------------------------------------
 
     // load models
     // -----------                                                                          //dodato true za gama fju
-    Model ourModel("resources/objects/riba/riba.obj",true);
+    Model ourModel("resources/objects/riba/riba.obj", true);
     ourModel.SetShaderTextureNamePrefix("material.");
     Model padobranModel("resources/objects/padobran/padobran.obj",true);
     padobranModel.SetShaderTextureNamePrefix("material.");
@@ -814,6 +815,8 @@ int main() {    //--------------------------------------------------------------
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         hdrShader.use();
+        //hdrShader.setMat4("projection",projection);
+        //hdrShader.setMat4("view",view);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, colorBuffer);
         hdrShader.setBool("hdr", hdr);
@@ -946,7 +949,9 @@ void DrawImGui(ProgramState *programState) {
         ImGui::DragFloat("pointLight.constant", &pointLightconstant, 0.05, 0.0, 1.0);
         ImGui::DragFloat("pointLight.quadratic", &pointLightquadratic, 0.05, 0.0, 1.0);
         ImGui::Text("Press 'O' for SPOTLIGHT\n");
-        ImGui::Text("Press 'P' for BLINN\n");
+        ImGui::Text("Press 'P' for BLINN\n\n");
+        ImGui::Text("Press 'Q' for exposure (-)  |  'E' for exposure (+) \n");
+        ImGui::DragFloat("exposure", &exposure, 0.05, 0.0, 1.0);
         ImGui::Checkbox("Camera mouse update", &programState->CameraMouseMovementUpdateEnabled);
         ImGui::End();
     }
@@ -1024,13 +1029,13 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
     {
         if (exposure > 0.0f)
-            exposure -= 0.001f;
+            exposure -= 0.005f;
         else
             exposure = 0.0f;
     }
     else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
     {
-        exposure += 0.001f;
+        exposure += 0.005f;
     }
 }
 
@@ -1137,6 +1142,7 @@ unsigned int loadTexture(char const * path, bool gammaCorrection)
 
     return textureID;
 }
+
 
 
 unsigned int quadVAO = 0;
