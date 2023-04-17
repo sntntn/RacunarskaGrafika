@@ -59,4 +59,9 @@ ImGui:\
 [Zvezda](https://rigmodels.com/model.php?view=Star_Fish-3d-model__O5T6WV158SFXN8YLU5HYHWW1Q&searchkeyword=star&manualsearch=1)\
 [Riba](https://rigmodels.com/model.php?view=Fish-3d-model__L5GWQCNY48U447XE7EQDWOFVC&searchkeyword=fish&manualsearch=1)
 
+
+## [Youtube video prezentacija](https://www.youtube.com/watch?v=PqqQ0k7qxVU)
+
 Autor: Vukasin Markovic 312/2019
+
+
