@@ -1,76 +1,69 @@
-# Projekat: Goldfish and parachute worms
-Projekat iz racunarske grafike\
-Koriscen je skelet projekta [project base](https://github.com/matf-racunarska-grafika/project_base) kao i materijali iz [LearnOpenGL](https://github.com/matf-racunarska-grafika/LearnOpenGL.git)  repozitorijuma.\
-Implementirane su obavezne teme.
+# Project: Goldfish and Parachute Worms
+A project for computer graphics.
+The project skeleton [project base](https://github.com/matf-racunarska-grafika/project_base) was used, along with materials from the [LearnOpenGL](https://github.com/matf-racunarska-grafika/LearnOpenGL.git) repository.
+Mandatory topics have been implemented.
 
-Dodatne teme:
+### Additional Topics:
 
-Iz grupe A:
+From Group A:
 - [x] Cubemaps (Skybox)
 
-Iz grupe B:
+From Group B:
 - [x] HDR (exposure)
 
 
-
-# Uputstvo
+# Instructions
 1. `git clone https://github.com/sntntn/RacunarskaGrafika`
-2. CLion -> Open -> path/to/my/project_base
-3. Main se nalazi u src/main.cpp
+2. Open CLion -> Open -> path/to/my/project_base
+3. The main function is located in `src/main.cpp`
 4. ALT+SHIFT+F9 -> project_base -> run
 
 
-Opis 
----
-Cilj je da aktiviramo sve crvice padobrance "parachute worms", i da njima nahranimo nasu zlatnu ribicu.\
-Svakim pojedenim crvom ribicin odsjaj postaje sve jaci, sve dok ne pojede i poslednjeg crva.\
-Kada pojedemo poslednjeg crva -> nasa misticna kutija ispod ribe postaje zlatni novcic (koji nam omogucava Restart).\
-Svaki put kad aktiviramo crvica, aktivira se i njegova prateca zvezda.
-
+## Description
+The goal is to activate all parachute worms and feed them to our goldfish.
+With each worm eaten, the fish's glow becomes stronger until it eats the last worm.
+Once the last worm is eaten, the mystical box below the fish transforms into a golden coin (which allows us to restart).
+Each time a worm is activated, its accompanying star is also activated.
 
 ---
-Komande
+### Controls
 ---
-`ESC` Prekida izvrsavanje projekta
+`ESC` Terminates the project execution
 
----
-Kretanje kamere:\
-- `W` `A` `S` `D`\
-- Pomeranje misa je rotacija kamere
-- Mouse scroll uvelicava sliku 
+#### Camera movement:
+- `W` `A` `S` `D`
+- Moving the mouse rotates the camera
+- Mouse scroll zooms in and out
 
----
+#### Toggle Features:
+`Space` Prints camera coordinates
+`B` Activates the first parachute worm
+`N` Activates the second parachute worm
+`M` Activates the third parachute worm
+`R` RESTART (enabled when the coin appears)
 
-Ukljucivanje/Iskljucivanje:\
-`Space` stampa koordinate kamere\
-`B` aktiviranje 1. padobranca crvica\
-`N` aktiviranje 2. padobranca crvica\
-`M` aktiviranje 2. padobranca crvica\
-`R` RESTART (omoguceno nam je kada nam izadje novcic)
-
-`P` Blinn\
+`P` Blinn
 `O` SpotLight
 
-`1` HDR\
+`1` HDR
 `F` BLOOM
 
-`Q` Exposure +\
-`E` Exposure -
+`Q` Increase Exposure
+`E` Decrease Exposure
+
 ---
-ImGui:\
-`I` otvaranje/zatvaranje ImGui prozora
+### ImGui:
+`I` Opens/closes the ImGui window
 
-## Resursi:
-[coin](https://rigmodels.com/model.php?view=Coin-3d-model__I89O58TBZ353I4X9ANHTRFF5K&searchkeyword=coin&manualsearch=1)\
-[padobran](https://rigmodels.com/model.php?view=Parachute_Worm-3d-model__Q41SJLO72KVS0UJF2D1DM2OXO&searchkeyword=parachute&manualsearch=1)\
-[Zvezda](https://rigmodels.com/model.php?view=Star_Fish-3d-model__O5T6WV158SFXN8YLU5HYHWW1Q&searchkeyword=star&manualsearch=1)\
-[Riba](https://rigmodels.com/model.php?view=Fish-3d-model__L5GWQCNY48U447XE7EQDWOFVC&searchkeyword=fish&manualsearch=1)
+## Resources:
+[Coin](https://rigmodels.com/model.php?view=Coin-3d-model__I89O58TBZ353I4X9ANHTRFF5K&searchkeyword=coin&manualsearch=1)
+[Parachute](https://rigmodels.com/model.php?view=Parachute_Worm-3d-model__Q41SJLO72KVS0UJF2D1DM2OXO&searchkeyword=parachute&manualsearch=1)
+[Star](https://rigmodels.com/model.php?view=Star_Fish-3d-model__O5T6WV158SFXN8YLU5HYHWW1Q&searchkeyword=star&manualsearch=1)
+[Fish](https://rigmodels.com/model.php?view=Fish-3d-model__L5GWQCNY48U447XE7EQDWOFVC&searchkeyword=fish&manualsearch=1)
 
+### [YouTube Video Presentation without HDR](https://www.youtube.com/watch?v=PqqQ0k7qxVU)
+### [YouTube Video Presentation with HDR](https://www.youtube.com/watch?v=22H2bCjXMRk)
+### [YouTube Video Presentation with HDR and BLOOM](https://www.youtube.com/watch?v=DAeUchHD-hc)
 
-### [Youtube video prezentacija bez HDR](https://www.youtube.com/watch?v=PqqQ0k7qxVU)
-### [Youtube video prezentacija sa HDR](https://www.youtube.com/watch?v=22H2bCjXMRk)
-### [Youtube video prezentacija HDR i BLOOM](https://www.youtube.com/watch?v=DAeUchHD-hc)
-
-Autor: Vukasin Markovic 312/2019
-
+**Author:** Vukašin Marković 312/2019
 
